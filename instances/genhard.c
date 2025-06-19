@@ -114,6 +114,12 @@ int primelarger(int i)
 }
 
 
+void error(const char *msg) {
+    fprintf(stderr, "Error: %s\n", msg);
+    exit(EXIT_FAILURE);
+}
+
+
 /* ======================================================================
                                 generator
    ====================================================================== */
