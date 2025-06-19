@@ -9,10 +9,8 @@ type = 9
 r = 100000
 id = 17
 
-filename = "knapPI_"+str(type)+"_"+str(n)+"_"+str(r)+"_"+str(id)+".txt"
-
 compile_generator()
-generate_instance(n, type, r, id)
+filename = generate_instance(n, type, r, id)
 n, c, p, w = extract_data(filename)
 scip = create_model(n, c, p, w)
 scip.optimize()

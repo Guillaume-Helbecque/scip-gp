@@ -249,6 +249,8 @@ void showitems(int type, int n, int r, int id, int *pp, int *ww, long long c)
   }
   fprintf(out,"%lld\n", c);
   fclose(out);
+
+  printf("%s\n", filename);
 }
 
 
@@ -269,8 +271,8 @@ void main(int argc, char *argv[])
     type = atoi(argv[3]);
     i = atoi(argv[4]);
     S = atoi(argv[5]);
-    printf("generator2 %d %d %d %d %d\n", n, r, type, i, S);
-  } else {
+    // printf("generator2 %d %d %d %d %d\n", n, r, type, i, S);
+  } /* else {
     printf("generator2\n");
     printf("n = ");
     ok = scanf("%d", &n);
@@ -282,7 +284,7 @@ void main(int argc, char *argv[])
     ok = scanf("%d", &i);
     printf("S = ");
     ok = scanf("%d", &S);
-  }
+  } */
 
   pp = (int *) malloc(n * sizeof(int));
   ww = (int *) malloc(n * sizeof(int));

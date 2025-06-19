@@ -20,6 +20,9 @@ def generate_instance(n, t, r, i, S=100):
         - r: range of data
         - i: index of instance
         - S: number of instances in the series
+    The file name is returned.
     """
     os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
-    subprocess.run(["./genhard.out", str(n), str(r), str(t), str(i), str(S)])
+    result = subprocess.run(["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
+                            capture_output=True, text=True)
+    return result.stdout.strip()
