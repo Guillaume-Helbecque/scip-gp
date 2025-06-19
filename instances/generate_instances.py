@@ -1,13 +1,10 @@
 import os
 import subprocess
 
-os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
-
-def compile_generator():
+def _compile_generator():
     """
     Compiles the C file 'genhard.c' using gcc to produce 'genhard.out'.
     """
-    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
     subprocess.run(["gcc", "genhard.c", "-lm", "-o", "genhard.out"])
 
 def generate_instance(n, t, r, i, S=100):
@@ -23,6 +20,7 @@ def generate_instance(n, t, r, i, S=100):
     The file name is returned.
     """
     os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
+    _compile_generator()
     result = subprocess.run(["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
                             capture_output=True, text=True)
     return result.stdout.strip()
