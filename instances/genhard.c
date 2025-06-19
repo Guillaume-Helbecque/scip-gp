@@ -232,13 +232,16 @@ long long generator(int n, int *pp, int *ww, int type, int r, int v, int tests)
                                 showitems
    ====================================================================== */
 
-void showitems(int n, int *pp, int *ww, long long c)
+void showitems(int type, int n, int r, int id, int *pp, int *ww, long long c)
 {
   int i;
   long long ps, ws;
   FILE *out;
 
-  out = fopen("test.in", "w");
+  char filename[100];
+  sprintf(filename, "knapPI_%d_%d_%d_%d.txt", type, n, r, id);
+
+  out = fopen(filename, "w");
   if (out == NULL) error("no file");
   fprintf(out,"%d\n", n);
   for (i = 0; i < n; i++) {
@@ -284,7 +287,7 @@ void main(int argc, char *argv[])
   pp = (int *) malloc(n * sizeof(int));
   ww = (int *) malloc(n * sizeof(int));
   c = generator(n, pp, ww, type, r, i, S);
-  showitems(n, pp, ww, c);
+  showitems(type, n, r, i, pp, ww, c);
   free(pp);
   free(ww);
 }
