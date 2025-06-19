@@ -1,7 +1,7 @@
 import os
 from pyscipopt import Model, quicksum
 
-def extract_data(filename):
+def _extract_data(filename):
     """
     Extracts instance data contained inside a file.
     """
@@ -23,10 +23,12 @@ def extract_data(filename):
 
     return n, c, p, w
 
-def create_model(n, c, p, w):
+def create_model(filename):
     """
     Create a SCIP model based on the given instance data.
     """
+    n, c, p, w = _extract_data(filename)
+
     model = Model()
 
     # Create binary decision variables
