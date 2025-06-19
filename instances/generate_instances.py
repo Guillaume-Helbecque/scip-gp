@@ -7,6 +7,7 @@ def compile_generator():
     """
     Compiles the C file 'genhard.c' using gcc to produce 'genhard.out'.
     """
+    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
     subprocess.run(["gcc", "genhard.c", "-lm", "-o", "genhard.out"])
 
 def generate_instance(n, t, r, i, S=100):
@@ -20,4 +21,5 @@ def generate_instance(n, t, r, i, S=100):
         - i: index of instance
         - S: number of instances in the series
     """
+    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
     subprocess.run(["./genhard.out", str(n), str(r), str(t), str(i), str(S)])
