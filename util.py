@@ -5,5 +5,6 @@ def print_results(model):
     print("SCIP Status       :", model.getStatus())
     print("Solving Time (sec):", model.getSolvingTime())
     print("Solving Nodes     :", model.getNNodes())
-    print("Primal Bound      :", model.getObjVal())
-    print("Solution(s) found :", model.getNSolsFound())
+    if model.getNSolsFound() > 0:
+        print("Primal Bound      :", model.getObjVal())
+        print("Solution(s) found :", model.getNSolsFound())
