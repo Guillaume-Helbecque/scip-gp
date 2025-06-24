@@ -1,9 +1,12 @@
 import os
 
-def print_results(model):
+def print_results(instancename, model):
     """
     Defines a custom output for SCIP solver.
     """
+    instancename = os.path.splitext(instancename)[0]
+
+    print("Instance          :", instancename)
     print("SCIP Status       :", model.getStatus())
     print("Solving Time (sec):", model.getSolvingTime())
     print("Solving Nodes     :", model.getNNodes())
