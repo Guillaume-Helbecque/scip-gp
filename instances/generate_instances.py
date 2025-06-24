@@ -28,10 +28,10 @@ def generate_instance(n, t, r, i, S=100):
 
 def clean_files():
     """
-    Clean the generated files (*.out and *.txt).
+    Clean the generated files (genhard.out and knapPI_*.txt).
     """
     if os.path.exists("genhard.out"):
         os.remove("genhard.out")
 
-    for txt_file in glob.glob("*.txt"):
-        os.remove(txt_file)
+    for instance_file in glob.glob("knapPI_*.txt"):
+        os.remove(instance_file)

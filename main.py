@@ -25,6 +25,6 @@ for id in range(1, S+1):
     scip.hideOutput()
     scip.optimize()
     print_results(scip)
-    store_results(instancename, scip, "test.txt2")
+    store_results(instancename, scip, "test_output.txt")
 
 clean_files()
