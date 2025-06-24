@@ -7,6 +7,15 @@ from util import print_results, store_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 
+# TODO:
+#     - Improve the way we navigate between directories
+
+## Global parameters
+
+save_output = True
+
+## SCIP solving
+
 param_dict = {
     "nodeselection/dfs/stdpriority": 1073741823,
 }
@@ -25,6 +34,7 @@ for id in range(1, S+1):
     scip.hideOutput()
     scip.optimize()
     print_results(scip)
-    store_results(instancename, scip, "test_output.txt")
+    if save_output:
+        store_results(instancename, scip, "test_output.txt")
 
 clean_files()
