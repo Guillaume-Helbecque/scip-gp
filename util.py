@@ -1,3 +1,5 @@
+import os
+
 def print_results(model):
     """
     Defines a custom output for SCIP solver.
@@ -7,4 +9,39 @@ def print_results(model):
     print("Solving Nodes     :", model.getNNodes())
     if model.getNSolsFound() > 0:
         print("Primal Bound      :", model.getObjVal())
-        print("Solution(s) found :", model.getNSolsFound())
+        print("Solutions found :", model.getNSolsFound())
+
+def store_results(instancename, model, filename):
+    """
+    Stores a custom output for SCIP solver in a file.
+    """
+    instancename = os.path.splitext(instancename)[0]
+
+    header = (
+        f"{'Instance':<26}"
+        f"{'SCIP Status':<13}"
+        f"{'Solving Time (sec)':<20}"
+        f"{'Solving Nodes':<15}"
+        f"{'Primal Bound':<14}"
+        f"{'Solutions found':<15}\n"
+    )
+
+    # Write header if file does not exist
+    if not os.path.exists(filename):
+        with open(filename, "w") as f:
+            f.write(header)
+
+    # Append a new data line
+    with open(filename, "a") as f:
+        f.write(
+            f"{instancename:<26}"
+            f"{model.getStatus():<13}"
+            f"{model.getSolvingTime():<20.4f}"
+            f"{model.getNNodes():<15}"
+        )
+        if model.getNSolsFound() > 0:
+            f.write(
+                f"{model.getObjVal():<14.1f}"
+                f"{model.getNSolsFound():<15}"
+            )
+        f.write("\n")
