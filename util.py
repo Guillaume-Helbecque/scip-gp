@@ -9,7 +9,7 @@ def print_results(model):
     print("Solving Nodes     :", model.getNNodes())
     if model.getNSolsFound() > 0:
         print("Primal Bound      :", model.getObjVal())
-        print("Solutions found :", model.getNSolsFound())
+        print("Solutions found   :", model.getNSolsFound(),"\n")
 
 def store_results(instancename, model, filename):
     """
