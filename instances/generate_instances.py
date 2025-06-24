@@ -1,4 +1,5 @@
 import os
+import glob
 import subprocess
 
 def _compile_generator():
@@ -24,3 +25,13 @@ def generate_instance(n, t, r, i, S=100):
     result = subprocess.run(["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
                             capture_output=True, text=True)
     return result.stdout.strip()
+
+def clean_files():
+    """
+    Clean the generated files (*.out and *.txt).
+    """
+    if os.path.exists("genhard.out"):
+        os.remove("genhard.out")
+
+    for txt_file in glob.glob("*.txt"):
+        os.remove(txt_file)

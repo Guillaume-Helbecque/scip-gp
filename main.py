@@ -1,7 +1,7 @@
 import os
 os.chdir("/home/ghelbecq/Bureau/scip-rl/")
 
-from instances.generate_instances import generate_instance
+from instances.generate_instances import generate_instance, clean_files
 from model.generate_model import create_model
 from util import print_results
 
@@ -24,3 +24,5 @@ scip.setPresolve(SCIP_PARAMSETTING.OFF)
 scip.hideOutput()
 scip.optimize()
 print_results(scip)
+
+clean_files()
