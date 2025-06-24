@@ -15,6 +15,9 @@ def store_results(instancename, model, filename):
     """
     Stores a custom output for SCIP solver in a file.
     """
+    os.makedirs("/home/ghelbecq/Bureau/scip-rl/outputs/", exist_ok=True)
+    os.chdir("/home/ghelbecq/Bureau/scip-rl/outputs/")
+
     instancename = os.path.splitext(instancename)[0]
 
     header = (

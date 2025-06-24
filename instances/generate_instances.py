@@ -30,6 +30,8 @@ def clean_files():
     """
     Clean the generated files (genhard.out and knapPI_*.txt).
     """
+    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
+
     if os.path.exists("genhard.out"):
         os.remove("genhard.out")
 
