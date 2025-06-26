@@ -29,9 +29,20 @@ output_filename = "test_output.txt"
 
 param_dict = {
     "nodeselection/dfs/stdpriority": 1073741823,
-    # "branching/fullstrong/priority": 536870911,
     "limits/time": 60,
 }
+
+def setBranchingRule(scip):
+    """
+    Sets the SCIP branching rule based on the `branch_rule` option.
+    """
+    match branch_rule:
+        case "default":
+            scip.setParam("branching/fullstrong/priority", 536870911)
+        case "customStrongBranching":
+            custom_branch_rule = StrongBranchingRule(scip)
+            scip.includeBranchrule(custom_branch_rule, "", "",
+                priority=536870911, maxdepth=-1, maxbounddist=1)
 
 if solve_all:
     # Solve all instances in series (`S` in total)
@@ -43,9 +54,7 @@ if solve_all:
         scip.setPresolve(SCIP_PARAMSETTING.OFF)
         scip.hideOutput()
 
-        custom_strong_branching = StrongBranchingRule(scip)
-        scip.includeBranchrule(custom_strong_branching, "", "",
-            priority=10000000, maxdepth=-1, maxbounddist=1)
+        setBranchingRule(scip)
 
         scip.optimize()
         print_results(instancename, scip)
@@ -60,9 +69,7 @@ else:
     scip.setPresolve(SCIP_PARAMSETTING.OFF)
     scip.hideOutput()
 
-    custom_strong_branching = StrongBranchingRule(scip)
-    scip.includeBranchrule(custom_strong_branching, "", "",
-        priority=10000000, maxdepth=-1, maxbounddist=1)
+    setBranchingRule(scip)
 
     scip.optimize()
     print_results(instancename, scip)
