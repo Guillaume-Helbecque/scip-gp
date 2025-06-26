@@ -3,6 +3,7 @@ os.chdir("/home/ghelbecq/Bureau/scip-rl/")
 
 from instances.generate_instances import generate_instance, clean_files
 from branching.StrongBranchingRule import StrongBranchingRule
+from branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from model.generate_model import create_model
 from util import print_results, store_results
 
@@ -16,6 +17,8 @@ from pyscipopt import Model, SCIP_PARAMSETTING
 save_output = False
 solve_all   = False
 branch_rule = "customStrongBranching"
+# branch_rule = "customStrongMultiBranching"
+# branch_rule = "default"
 
 n = 100
 type = 11
@@ -41,6 +44,10 @@ def setBranchingRule(scip):
             scip.setParam("branching/fullstrong/priority", 536870911)
         case "customStrongBranching":
             custom_branch_rule = StrongBranchingRule(scip)
+            scip.includeBranchrule(custom_branch_rule, "", "",
+                priority=536870911, maxdepth=-1, maxbounddist=1)
+        case "customStrongMultiBranching":
+            custom_branch_rule = StrongMultiBranchingRule(scip)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
