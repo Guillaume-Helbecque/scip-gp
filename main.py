@@ -5,7 +5,7 @@ from instances.generate_instances import generate_instance, clean_files
 from branching.StrongBranchingRule import StrongBranchingRule
 from branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from model.generate_model import create_model
-from util import print_results, store_results
+from util import print_results, store_results, extract_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 
@@ -60,6 +60,7 @@ if solve_all:
         scip.setParams(param_dict)
         scip.setHeuristics(SCIP_PARAMSETTING.OFF)
         scip.setPresolve(SCIP_PARAMSETTING.OFF)
+        # scip.setSeparating(SCIP_PARAMSETTING.OFF)
         scip.hideOutput()
         setBranchingRule(scip)
         scip.optimize()
@@ -75,6 +76,7 @@ else:
     scip.setParams(param_dict)
     scip.setHeuristics(SCIP_PARAMSETTING.OFF)
     scip.setPresolve(SCIP_PARAMSETTING.OFF)
+    # scip.setSeparating(SCIP_PARAMSETTING.OFF)
     scip.hideOutput()
     setBranchingRule(scip)
     scip.optimize()

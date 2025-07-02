@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 
 def print_results(instancename, model):
     """
@@ -51,3 +52,29 @@ def store_results(instancename, model, filename):
                 f"{model.getNSolsFound():<15}"
             )
         f.write("\n")
+
+def extract_results(filename):
+    """
+    Extract results from a file.
+    """
+    os.chdir("/home/ghelbecq/Bureau/scip-rl/outputs/")
+    data = pd.read_csv(
+        filename,
+        sep=r'\s+',
+        skiprows=1,
+        header=None,
+        names=[
+            "Instance",
+            "SCIP_Status",
+            "Solving_Time",
+            "Solving_Nodes",
+            "Primal_Bound",
+            "Solutions_found"
+        ]
+    )
+
+    print("RESULTS FOR: ", filename)
+    print("Average solving time:", data["Solving_Time"].mean())
+    print("Average number of nodes:", data["Solving_Nodes"].mean())
+    print(data["SCIP_Status"].value_counts())
+    print("\n")
