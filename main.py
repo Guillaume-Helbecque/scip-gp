@@ -14,11 +14,12 @@ from pyscipopt import Model, SCIP_PARAMSETTING
 
 ## Global parameters
 
-save_output = False
-solve_all   = False
-branch_rule = "customStrongBranching"
-# branch_rule = "customStrongMultiBranching"
-# branch_rule = "default"
+allowed_braching_rules = ["default", "customStrongBranching", "customStrongMultiBranching"]
+
+show_output = False
+save_output = True
+solve_all   = True
+branch_rule = allowed_braching_rules[1]
 
 n = 100
 type = 11
@@ -26,7 +27,7 @@ r = 1000
 S = 100
 id = 1
 
-output_filename = "test_output.txt"
+output_filename = f"knapPI_{type}_{n}_{r}_{branch_rule}.txt"
 
 ## SCIP solving
 
@@ -60,11 +61,11 @@ if solve_all:
         scip.setHeuristics(SCIP_PARAMSETTING.OFF)
         scip.setPresolve(SCIP_PARAMSETTING.OFF)
         scip.hideOutput()
-
         setBranchingRule(scip)
-
         scip.optimize()
-        print_results(instancename, scip)
+
+        if show_output:
+            print_results(instancename, scip)
         if save_output:
             store_results(instancename, scip, output_filename)
 else:
@@ -75,11 +76,11 @@ else:
     scip.setHeuristics(SCIP_PARAMSETTING.OFF)
     scip.setPresolve(SCIP_PARAMSETTING.OFF)
     scip.hideOutput()
-
     setBranchingRule(scip)
-
     scip.optimize()
-    print_results(instancename, scip)
+
+    if show_output:
+        print_results(instancename, scip)
     if save_output:
         store_results(instancename, scip, output_filename)
 
