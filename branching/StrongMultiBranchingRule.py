@@ -80,6 +80,10 @@ class StrongMultiBranchingRule(Branchrule):
         branch_cands, branch_cand_sols, branch_cand_fracs, \
             ncands, npriocands, nimplcands = self.scip.getLPBranchCands()
 
+        if npriocands == 1:
+            self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
+            return {"result": SCIP_RESULT.BRANCHED}
+
         if debug: print("branch_cand_sols = ", branch_cand_sols)
         if debug: print("sense : ", self.scip.getObjectiveSense())
 
@@ -152,7 +156,7 @@ class StrongMultiBranchingRule(Branchrule):
             if debug: print(f"bound_down = {bound_down}, bound_up = {bound_up}")
             if debug: print(f"down gain = {down_gain}, up gain = {up_gain}")
 
-            score = down_gain + up_gain
+            score = max(down_gain, up_gain)
             # score = self.scip.getBranchScoreMultiple(branch_cands[idx_set], [down_gain, up_gain])
             if debug: print(f"score = {score}")
 

@@ -29,7 +29,7 @@ def store_results(instancename, model, filename):
         f"{'SCIP Status':<13}"
         f"{'Solving Time (sec)':<20}"
         f"{'Solving Nodes':<15}"
-        f"{'Primal Bound':<14}"
+        f"{'Objective value':<17}"
         f"{'Solutions found':<15}\n"
     )
 
@@ -48,7 +48,7 @@ def store_results(instancename, model, filename):
         )
         if model.getNSolsFound() > 0:
             f.write(
-                f"{model.getObjVal():<14.1f}"
+                f"{model.getObjVal():<17.1f}"
                 f"{model.getNSolsFound():<15}"
             )
         f.write("\n")
@@ -68,7 +68,7 @@ def extract_results(filename):
             "SCIP_Status",
             "Solving_Time",
             "Solving_Nodes",
-            "Primal_Bound",
+            "Objective value",
             "Solutions_found"
         ]
     )

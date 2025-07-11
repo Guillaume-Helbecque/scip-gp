@@ -27,13 +27,19 @@ r = 1000
 S = 100
 id = 1
 
-output_filename = f"knapPI_{type}_{n}_{r}_{branch_rule}.txt"
+nvar = 1
+
+if branch_rule == "customStrongMultiBranching":
+    output_filename = f"knapPI_{type}_{n}_{r}_{branch_rule}_{nvar}.txt"
+else:
+    output_filename = f"knapPI_{type}_{n}_{r}_{branch_rule}.txt"
 
 ## SCIP solving
 
 param_dict = {
     "nodeselection/dfs/stdpriority": 1073741823,
-    "limits/time": 60,
+    "limits/time": 3*60,
+    "misc/usesymmetry": 5,
 }
 
 def setBranchingRule(scip):
@@ -48,7 +54,7 @@ def setBranchingRule(scip):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
         case "customStrongMultiBranching":
-            custom_branch_rule = StrongMultiBranchingRule(scip)
+            custom_branch_rule = StrongMultiBranchingRule(scip, nvar)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
