@@ -12,7 +12,7 @@ def print_results(instancename, model):
     print("Solving Time (sec):", model.getSolvingTime())
     print("Solving Nodes     :", model.getNNodes())
     if model.getNSolsFound() > 0:
-        print("Primal Bound      :", model.getObjVal())
+        print("Objective value   :", model.getObjVal())
         print("Solutions found   :", model.getNSolsFound(),"\n")
 
 def store_results(instancename, model, filename):
