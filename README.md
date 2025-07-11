@@ -1,10 +1,14 @@
 # scip-rl
 
-### Configuration
+## Environment Setup
 
-Configure your Python environment with:
+#### Prerequisites
 
-```
+Python >= 3.10
+
+#### Configuration
+
+```shell
 git clone https://github.com/Guillaume-Helbecque/scip-rl.git
 cd scip-rl
 python3 -m venv myenv
