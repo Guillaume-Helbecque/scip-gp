@@ -34,7 +34,7 @@ args = parser.parse_args()
 branch_rule = allowed_braching_rules[args.b]
 
 if branch_rule == "customStrongMultiBranching":
-    output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}_{args.nvar}.txt"
+    output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}_{args.nv}.txt"
 else:
     output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}.txt"
 
