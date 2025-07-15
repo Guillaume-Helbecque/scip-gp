@@ -59,26 +59,8 @@ def setBranchingRule(scip):
 
 ## SCIP solving
 
-if args.solve_all:
-    # Solve all instances in series (`S` in total)
-    for id in range(1, args.s+1):
-        instancename = generate_instance(args.n, args.t, args.r, id, args.s)
-        scip = create_model(instancename)
-        scip.setParams(param_dict)
-        scip.setHeuristics(SCIP_PARAMSETTING.OFF)
-        scip.setPresolve(SCIP_PARAMSETTING.OFF)
-        scip.setSeparating(SCIP_PARAMSETTING.OFF)
-        scip.hideOutput()
-        setBranchingRule(scip)
-        scip.optimize()
-
-        if not args.no_output:
-            print_results(instancename, scip)
-        if args.save_output:
-            store_results(instancename, scip, output_filename)
-else:
-    # Solve only instance `id`
-    instancename = generate_instance(args.n, args.t, args.r, args.i, args.s)
+def solve_instance(args, id, param_dict, output_filename):
+    instancename = generate_instance(args.n, args.t, args.r, id, args.s)
     scip = create_model(instancename)
     scip.setParams(param_dict)
     scip.setHeuristics(SCIP_PARAMSETTING.OFF)
@@ -92,5 +74,13 @@ else:
         print_results(instancename, scip)
     if args.save_output:
         store_results(instancename, scip, output_filename)
+
+if args.solve_all:
+    # Solve all instances in series (`S` in total)
+    for id in range(1, args.s+1):
+        solve_instance(args, id, param_dict, output_filename)
+else:
+    # Solve only the instance given by `-i`
+    solve_instance(args, args.i, param_dict, output_filename)
 
 clean_files()
