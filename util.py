@@ -1,5 +1,37 @@
 import os
+import argparse
 import pandas as pd
+
+## Arguments parser
+
+parser = argparse.ArgumentParser(prog='main.py')
+
+# Instance
+parser.add_argument('-n', type=int, default=100, help='number of items')
+parser.add_argument('-t', type=int, default=11,
+    choices = [1,2,3,4,5,6,7,8,9,11,12,13,14,15,16], help='instance type')
+parser.add_argument('-r', type=int, default=1000, help='range of coefficients')
+parser.add_argument('-s', type=int, default=100,
+    help='number of instances in series')
+parser.add_argument('-i', type=int, default=1, help='instance index')
+
+# SCIP
+parser.add_argument('--timelimit', type=int, default=180,
+    help='time limit for SCIP solving (seconds)')
+
+# Branching
+parser.add_argument('-b', type=int, default=1, choices = [0,1,2],
+    help='branching rule index')
+parser.add_argument('--nv', type=int, default=1, help='size of branching set')
+
+# Outputs
+parser.add_argument('--no-output', action='store_true', help='Disable output')
+parser.add_argument('--save-output', action='store_true',
+    help='save output in a file')
+parser.add_argument('--solve-all', action='store_true',
+    help='solve all instances in series')
+
+## Misc
 
 def print_results(instancename, model):
     """

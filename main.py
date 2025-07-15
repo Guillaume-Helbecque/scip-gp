@@ -14,37 +14,30 @@ from instances.generate_instances import generate_instance, clean_files
 from branching.StrongBranchingRule import StrongBranchingRule
 from branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from model.generate_model import create_model
-from util import print_results, store_results, extract_results
+from util import parser, print_results, store_results, extract_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 
-## Global parameters
+## Configuration
 
-allowed_braching_rules = ["default", "customStrongBranching", "customStrongMultiBranching"]
+allowed_braching_rules = [
+    "default",
+    "customStrongBranching",
+    "customStrongMultiBranching",
+]
 
-show_output = False
-save_output = True
-solve_all   = True
-branch_rule = allowed_braching_rules[1]
+args = parser.parse_args()
 
-n = 100
-type = 11
-r = 1000
-S = 100
-id = 1
-
-nvar = 1
+branch_rule = allowed_braching_rules[args.b]
 
 if branch_rule == "customStrongMultiBranching":
-    output_filename = f"knapPI_{type}_{n}_{r}_{branch_rule}_{nvar}.txt"
+    output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}_{args.nvar}.txt"
 else:
-    output_filename = f"knapPI_{type}_{n}_{r}_{branch_rule}.txt"
-
-## SCIP solving
+    output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}.txt"
 
 param_dict = {
     "nodeselection/dfs/stdpriority": 1073741823,
-    "limits/time": 3*60,
+    "limits/time": args.timelimit,
     "misc/usesymmetry": 5,
 }
 
@@ -60,14 +53,16 @@ def setBranchingRule(scip):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
         case "customStrongMultiBranching":
-            custom_branch_rule = StrongMultiBranchingRule(scip, nvar)
+            custom_branch_rule = StrongMultiBranchingRule(scip, args.nvar)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
-if solve_all:
+## SCIP solving
+
+if args.solve_all:
     # Solve all instances in series (`S` in total)
-    for id in range(1, S+1):
-        instancename = generate_instance(n, type, r, id, S)
+    for id in range(1, args.s+1):
+        instancename = generate_instance(args.n, args.t, args.r, id, args.s)
         scip = create_model(instancename)
         scip.setParams(param_dict)
         scip.setHeuristics(SCIP_PARAMSETTING.OFF)
@@ -77,13 +72,13 @@ if solve_all:
         setBranchingRule(scip)
         scip.optimize()
 
-        if show_output:
+        if not args.no_output:
             print_results(instancename, scip)
-        if save_output:
+        if args.save_output:
             store_results(instancename, scip, output_filename)
 else:
     # Solve only instance `id`
-    instancename = generate_instance(n, type, r, id, S)
+    instancename = generate_instance(args.n, args.t, args.r, args.i, args.s)
     scip = create_model(instancename)
     scip.setParams(param_dict)
     scip.setHeuristics(SCIP_PARAMSETTING.OFF)
@@ -93,9 +88,9 @@ else:
     setBranchingRule(scip)
     scip.optimize()
 
-    if show_output:
+    if not args.no_output:
         print_results(instancename, scip)
-    if save_output:
+    if args.save_output:
         store_results(instancename, scip, output_filename)
 
 clean_files()
