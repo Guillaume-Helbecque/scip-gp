@@ -4,9 +4,16 @@ import subprocess
 
 def _compile_generator():
     """
-    Compiles the C file 'genhard.c' using gcc to produce 'genhard.out'.
+    Compiles the C file 'genhard.c' using gcc to produce 'genhard.out',
+    only if 'genhard.out' does not already exist.
     """
-    subprocess.run(["gcc", "genhard.c", "-lm", "-o", "genhard.out"])
+    binary_path = os.path.join("instances", "genhard.out")
+
+    if not os.path.exists(binary_path):
+        subprocess.run(
+            ["gcc", "genhard.c", "-lm", "-o", "genhard.out"],
+            cwd="./instances"
+        )
 
 def generate_instance(n, t, r, i, S=100):
     """
