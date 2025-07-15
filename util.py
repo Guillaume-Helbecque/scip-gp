@@ -31,6 +31,9 @@ parser.add_argument('--save-output', action='store_true',
 parser.add_argument('--solve-all', action='store_true',
     help='solve all instances in series')
 
+# Others
+parser.add_argument('--parmode', action='store_true', help='Enable parallel mode')
+
 ## Misc
 
 def print_results(instancename, model):
