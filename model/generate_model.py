@@ -5,8 +5,6 @@ def _extract_data(filename):
     """
     Extracts instance data contained inside a file.
     """
-    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
-
     with open(filename, 'r') as f:
         lines = f.readlines()
 
@@ -27,7 +25,7 @@ def create_model(filename):
     """
     Create a SCIP model based on the given instance data.
     """
-    n, c, p, w = _extract_data(filename)
+    n, c, p, w = _extract_data(os.path.join("instances", filename))
 
     model = Model()
 

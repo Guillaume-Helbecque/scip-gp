@@ -19,10 +19,10 @@ def store_results(instancename, model, filename):
     """
     Stores a custom output for SCIP solver in a file.
     """
-    os.makedirs("/home/ghelbecq/Bureau/scip-rl/outputs/", exist_ok=True)
-    os.chdir("/home/ghelbecq/Bureau/scip-rl/outputs/")
+    os.makedirs("outputs", exist_ok=True)
 
     instancename = os.path.splitext(instancename)[0]
+    filename = os.path.join("outputs", filename)
 
     header = (
         f"{'Instance':<26}"
@@ -57,9 +57,8 @@ def extract_results(filename):
     """
     Extract results from a file.
     """
-    os.chdir("/home/ghelbecq/Bureau/scip-rl/outputs/")
     data = pd.read_csv(
-        filename,
+        os.path.join("outputs", filename),
         sep=r'\s+',
         skiprows=1,
         header=None,

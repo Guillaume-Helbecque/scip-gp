@@ -12,7 +12,7 @@ def _compile_generator():
     if not os.path.exists(binary_path):
         subprocess.run(
             ["gcc", "genhard.c", "-lm", "-o", "genhard.out"],
-            cwd="./instances"
+            cwd="instances"
         )
 
 def generate_instance(n, t, r, i, S=100):
@@ -27,20 +27,24 @@ def generate_instance(n, t, r, i, S=100):
         - S: number of instances in the series
     The file name is returned.
     """
-    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
     _compile_generator()
-    result = subprocess.run(["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
-                            capture_output=True, text=True)
+    result = subprocess.run(
+        ["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
+        capture_output=True,
+        text=True,
+        cwd="instances"
+    )
     return result.stdout.strip()
 
 def clean_files():
     """
     Clean the generated files (genhard.out and knapPI_*.txt).
     """
-    os.chdir("/home/ghelbecq/Bureau/scip-rl/instances/")
+    binary_path = os.path.join("instances", "genhard.out")
+    files_path = os.path.join("instances", "knapPI_*.txt")
 
-    if os.path.exists("genhard.out"):
-        os.remove("genhard.out")
+    if os.path.exists(binary_path):
+        os.remove(binary_path)
 
-    for instance_file in glob.glob("knapPI_*.txt"):
+    for instance_file in glob.glob(files_path):
         os.remove(instance_file)

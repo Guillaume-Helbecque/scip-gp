@@ -1,5 +1,14 @@
 import os
-os.chdir("/home/ghelbecq/Bureau/scip-rl/")
+
+try:
+    work_dir = os.path.dirname(os.path.abspath(__file__))
+except NameError:
+    import inspect
+    frame = inspect.currentframe()
+    filename = inspect.getfile(frame)
+    work_dir = os.path.dirname(os.path.abspath(filename))
+
+os.chdir(work_dir)
 
 from instances.generate_instances import generate_instance, clean_files
 from branching.StrongBranchingRule import StrongBranchingRule
@@ -8,9 +17,6 @@ from model.generate_model import create_model
 from util import print_results, store_results, extract_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
-
-# TODO:
-#     - Improve the way we navigate between directories
 
 ## Global parameters
 
