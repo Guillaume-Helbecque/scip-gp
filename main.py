@@ -13,7 +13,7 @@ except NameError:
 
 os.chdir(work_dir)
 
-from instances.generate_instances import generate_instance, clean_files
+from instances.generate_instances import compile_generator, generate_instance, clean_files
 from branching.StrongBranchingRule import StrongBranchingRule
 from branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from model.generate_model import create_model
@@ -56,7 +56,7 @@ def setBranchingRule(scip):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
         case "customStrongMultiBranching":
-            custom_branch_rule = StrongMultiBranchingRule(scip, args.nvar)
+            custom_branch_rule = StrongMultiBranchingRule(scip, args.nv)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
@@ -79,6 +79,8 @@ def solve_instance(args, id, param_dict, output_filename):
         store_results(instancename, scip, output_filename)
 
 if __name__ == '__main__':
+    compile_generator()
+
     if args.solve_all:
         # Solve all instances in series (`S` in total)
         if args.parmode:

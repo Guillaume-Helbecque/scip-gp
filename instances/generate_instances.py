@@ -2,7 +2,7 @@ import os
 import glob
 import subprocess
 
-def _compile_generator():
+def compile_generator():
     """
     Compiles the C file 'genhard.c' using gcc to produce 'genhard.out',
     only if 'genhard.out' does not already exist.
@@ -27,7 +27,6 @@ def generate_instance(n, t, r, i, S=100):
         - S: number of instances in the series
     The file name is returned.
     """
-    _compile_generator()
     result = subprocess.run(
         ["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
         capture_output=True,
