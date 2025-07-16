@@ -15,14 +15,13 @@ parser.add_argument('-s', type=int, default=100,
     help='number of instances in series')
 parser.add_argument('-i', type=int, default=1, help='instance index')
 
-# SCIP
+# Solver
 parser.add_argument('--timelimit', type=int, default=180,
     help='time limit for SCIP solving (seconds)')
-
-# Branching
 parser.add_argument('-b', type=int, default=1, choices = [0,1,2],
     help='branching rule index')
 parser.add_argument('--nv', type=int, default=1, help='size of branching set')
+parser.add_argument('--parmode', action='store_true', help='Enable parallel mode')
 
 # Outputs
 parser.add_argument('--no-output', action='store_true', help='Disable output')
@@ -30,9 +29,6 @@ parser.add_argument('--save-output', action='store_true',
     help='save output in a file')
 parser.add_argument('--solve-all', action='store_true',
     help='solve all instances in series')
-
-# Others
-parser.add_argument('--parmode', action='store_true', help='Enable parallel mode')
 
 ## Misc
 
