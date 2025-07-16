@@ -26,11 +26,22 @@ def _extract_data(filename):
 
     return n, c, p, w
 
+def _sort_data(n, weights, profits):
+    ratios = [profits[i] / weights[i] for i in range(n)]
+
+    for i in range(n):
+        max_ratio = max(ratios[i:])
+        max_idx = ratios.index(max_ratio, i)
+        ratios[i], ratios[max_idx] = ratios[max_idx], ratios[i]
+        weights[i], weights[max_idx] = weights[max_idx], weights[i]
+        profits[i], profits[max_idx] = profits[max_idx], profits[i]
+
 def create_model(filename):
     """
     Build a SCIP optimization model for the knapsack problem from an instance file.
     """
     n, c, p, w = _extract_data(os.path.join("instances", filename))
+    _sort_data(n, w, p)
 
     model = Model()
 
