@@ -46,7 +46,13 @@ param_dict = {
 
 def setBranchingRule(scip):
     """
-    Sets the SCIP branching rule based on the `branch_rule` option.
+    Configure and set the SCIP branching rule.
+
+    The branching rule is chosen based on the `-b` option.
+    Supported rules include:
+      - "default": SCIP default strong branching rule.
+      - "customStrongBranching": User-defined strong branching rule.
+      - "customStrongMultiBranching": User-defined multi-variable strong branching rule.
     """
     match branch_rule:
         case "default":
@@ -63,6 +69,15 @@ def setBranchingRule(scip):
 ## SCIP solving
 
 def solve_instance(args, id, param_dict, output_filename):
+    """
+    Solve a single optimization instance using SCIP.
+
+    This function generates an instance based on given parameters,
+    creates the corresponding SCIP model, applies configuration parameters,
+    and runs the optimization.
+
+    Optionally prints and/or saves results according to the user arguments.
+    """
     instancename = generate_instance(args.n, args.t, args.r, id, args.s)
     scip = create_model(instancename)
     scip.setParams(param_dict)
@@ -87,7 +102,6 @@ if __name__ == '__main__':
             args_list = [(args, id, param_dict, output_filename) for id in range(1, args.s + 1)]
             with mp.Pool(processes=mp.cpu_count()) as pool:
                 pool.starmap(solve_instance, args_list)
-            pool.close()
         else:
             for id in range(1, args.s+1):
                 solve_instance(args, id, param_dict, output_filename)
@@ -96,3 +110,4 @@ if __name__ == '__main__':
         solve_instance(args, args.i, param_dict, output_filename)
 
     clean_files()
+    print("All instances completed successfully.")

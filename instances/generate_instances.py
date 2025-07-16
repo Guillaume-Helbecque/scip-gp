@@ -4,8 +4,10 @@ import subprocess
 
 def compile_generator():
     """
-    Compiles the C file 'genhard.c' using gcc to produce 'genhard.out',
-    only if 'genhard.out' does not already exist.
+    Compile the C program 'genhard.c' into an executable 'genhard.out' inside the
+    'instances' directory.
+
+    The resulting executable is used to generate knapsack problem instances.
     """
     binary_path = os.path.join("instances", "genhard.out")
 
@@ -17,15 +19,18 @@ def compile_generator():
 
 def generate_instance(n, t, r, i, S=100):
     """
-    Generates a file named "knapPI_%t_%n_%r_%i.txt" containing the data of the
-    knapsack instance. This function calls the C generator of Pisinger, that is
-    assumed to be already compiled. The parameters are:
-        - n: number of items
-        - t: type of instance
-        - r: range of data
-        - i: index of instance
-        - S: number of instances in the series
-    The file name is returned.
+    Generate a knapsack problem instance file by invoking the compiled C generator.
+
+    The function calls the 'genhard.out' executable with parameters corresponding to:
+        - n: Number of items in the instance.
+        - t: Instance type identifier.
+        - r: Range of the coefficients.
+        - i: Index of the instance within the series.
+        - S: Total number of instances in the series (default is 100).
+
+    The generator writes the instance to a file named according to the pattern
+    "knapPI_<t>_<n>_<r>_<i>.txt" inside the 'instances' folder. The exact filename
+    is returned by the generator's standard output.
     """
     result = subprocess.run(
         ["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
@@ -37,7 +42,7 @@ def generate_instance(n, t, r, i, S=100):
 
 def clean_files():
     """
-    Clean the generated files (genhard.out and knapPI_*.txt).
+    Remove the compiled executable and all generated knapsack instance files.
     """
     binary_path = os.path.join("instances", "genhard.out")
     files_path = os.path.join("instances", "knapPI_*.txt")

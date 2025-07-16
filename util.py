@@ -38,7 +38,7 @@ parser.add_argument('--parmode', action='store_true', help='Enable parallel mode
 
 def print_results(instancename, model):
     """
-    Defines a custom output for SCIP solver.
+    Print summary results from a SCIP model optimization to standard output.
     """
     instancename = os.path.splitext(instancename)[0]
 
@@ -52,7 +52,10 @@ def print_results(instancename, model):
 
 def store_results(instancename, model, filename):
     """
-    Stores a custom output for SCIP solver in a file.
+    Append optimization results from a SCIP model to an output file.
+
+    Creates the output directory if it does not exist. Writes a header line
+    if the file is new. Each call appends a line with instance results.
     """
     os.makedirs("outputs", exist_ok=True)
 
@@ -90,7 +93,7 @@ def store_results(instancename, model, filename):
 
 def extract_results(filename):
     """
-    Extract results from a file.
+    Load and summarize results from an output file containing SCIP results.
     """
     data = pd.read_csv(
         os.path.join("outputs", filename),

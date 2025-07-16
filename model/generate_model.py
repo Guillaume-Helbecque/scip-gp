@@ -3,7 +3,12 @@ from pyscipopt import Model, quicksum
 
 def _extract_data(filename):
     """
-    Extracts instance data contained inside a file.
+    Extract instance data from a given file for a knapsack problem.
+
+    The file format is expected as follows:
+    - First line: integer `n` representing the number of items.
+    - Next `n` lines: each containing three integers (index, profit, weight).
+    - The line after these `n` lines: integer `c` representing the knapsack capacity.
     """
     with open(filename, 'r') as f:
         lines = f.readlines()
@@ -23,7 +28,7 @@ def _extract_data(filename):
 
 def create_model(filename):
     """
-    Create a SCIP model based on the given instance data.
+    Build a SCIP optimization model for the knapsack problem from an instance file.
     """
     n, c, p, w = _extract_data(os.path.join("instances", filename))
 
