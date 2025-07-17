@@ -59,7 +59,7 @@ The available options are listed below.
 #### Solver parameters:
 
 - **`--timelimit`**: time limit for SCIP solving (seconds)
-  - any positive integer (`180` by default)
+  - any positive integer (SCIP default is `1e+20`)
 
 - **`-b`**: branching rule index
   - `0`: SCIP default strong branching rule
