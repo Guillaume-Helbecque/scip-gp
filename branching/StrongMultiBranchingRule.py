@@ -80,7 +80,12 @@ class StrongMultiBranchingRule(Branchrule):
         branch_cands, branch_cand_sols, branch_cand_fracs, \
             ncands, npriocands, nimplcands = self.scip.getLPBranchCands()
 
-        if npriocands == 1:
+        # NOTE: 'nvar' is in fact the number of items 'n' (if no transformation occurs)
+        nvar = self.scip.getNVars()
+        vars = self.scip.getVars()
+        vals = [self.scip.getSolVal(None, var) for var in vars]
+
+        if ((npriocands == 1) and (self.n == 1)):
             self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
             return {"result": SCIP_RESULT.BRANCHED}
 
@@ -100,17 +105,18 @@ class StrongMultiBranchingRule(Branchrule):
         best_bound_down = None
         best_bound_up = None
 
-        real_n = npriocands if (npriocands < self.n) else self.n
+        real_n = nvar if (nvar < self.n) else self.n
 
         if debug: print("n = ", self.n)
         if debug: print("npriocands = ", npriocands)
         if debug: print("n_real = ", real_n)
 
         if debug: print("START LOOP")
-        cand_indices = list(range(npriocands))
+        cand_indices = list(range(nvar))
+        # NOTE: we only need the combination with at least one fractional variable
         for idx_set in combinations(cand_indices, real_n):
-            var_set = [branch_cands[i] for i in idx_set]
-            s = sum(branch_cand_sols[i] for i in idx_set)
+            var_set = [vars[i] for i in idx_set]
+            s = sum(vals[i] for i in idx_set)
 
             if debug: print(f"iter: {idx_set} = {var_set}, sum = {s}")
 
@@ -176,7 +182,7 @@ class StrongMultiBranchingRule(Branchrule):
         if debug: print("best sum = ", best_sum)
 
         child_down, child_eq, child_up = self.multiBranchVarVal(
-            [branch_cands[i] for i in best_set], best_sum)
+            [vars[i] for i in best_set], best_sum)
 
         # Update the bounds of the down node and up node. Some cols might not exist due to pricing
         if self.scip.allColsInLP():
