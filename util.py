@@ -21,7 +21,7 @@ parser.add_argument('--timelimit', type=int, default=1e+20,
 parser.add_argument('-b', type=int, default=1, choices = [0,1,2],
     help='branching rule index')
 parser.add_argument('--nv', type=int, default=1, help='size of branching set')
-parser.add_argument('--parmode', action='store_true', help='Enable parallel mode')
+parser.add_argument('--parmode', action='store_true', help='Enable parallel mode (only if --solve-all)')
 
 # Outputs
 parser.add_argument('--no-output', action='store_true', help='Disable output')
@@ -29,10 +29,12 @@ parser.add_argument('--save-output', action='store_true',
     help='save output in a file')
 parser.add_argument('--solve-all', action='store_true',
     help='solve all instances in series')
+parser.add_argument('--check-output', action='store_true',
+    help='Check whether the SCIP solution matches the known optimal one, if one exists')
 
 ## Misc
 
-def print_results(instancename, model):
+def print_results(instancename, model, check):
     """
     Print summary results from a SCIP model optimization to standard output.
     """
@@ -44,9 +46,15 @@ def print_results(instancename, model):
     print("Solving Nodes     :", model.getNNodes())
     if model.getNSolsFound() > 0:
         print("Objective value   :", model.getObjVal())
-        print("Solutions found   :", model.getNSolsFound(),"\n")
+        print("Solutions found   :", model.getNSolsFound())
+    if check:
+        c = _check_results(instancename, model)
+        if c: print("Check             : Success")
+        elif (c == False): print("Check             : Fail")
+        else: print("Check             : None")
+    print("")
 
-def store_results(instancename, model, filename):
+def store_results(instancename, model, filename, check):
     """
     Append optimization results from a SCIP model to an output file.
 
@@ -64,8 +72,14 @@ def store_results(instancename, model, filename):
         f"{'Solving Time (sec)':<20}"
         f"{'Solving Nodes':<15}"
         f"{'Objective value':<17}"
-        f"{'Solutions found':<15}\n"
+        f"{'Solutions found':<15}"
     )
+
+    if check:
+        c = _check_results(instancename, model)
+        header += f"{f'{'Check':<7}':>9}"
+
+    header += "\n"
 
     # Write header if file does not exist
     if not os.path.exists(filename):
@@ -80,34 +94,77 @@ def store_results(instancename, model, filename):
             f"{model.getSolvingTime():<20.4f}"
             f"{model.getNNodes():<15}"
         )
+
         if model.getNSolsFound() > 0:
             f.write(
                 f"{model.getObjVal():<17.1f}"
                 f"{model.getNSolsFound():<15}"
             )
+        else:
+            f.write(
+                f"{"":<17.1f}"
+                f"{"":<15}"
+            )
+
+        if check:
+            if c: f.write(f"{f'{'Success':<7}':>9}")
+            elif (c == False): f.write(f"{f'{'Fail':<7}':>9}")
+            else: f.write(f"{f'{'None':<7}':>9}")
+
         f.write("\n")
 
-def extract_results(filename):
+def extract_results(filename, check):
     """
     Load and summarize results from an output file containing SCIP results.
     """
+    columns=[
+        "Instance",
+        "SCIP_Status",
+        "Solving_Time",
+        "Solving_Nodes",
+        "Objective value",
+        "Solutions_found"
+    ]
+
+    if check:
+        columns.append("Check")
+
     data = pd.read_csv(
         os.path.join("outputs", filename),
         sep=r'\s+',
         skiprows=1,
         header=None,
-        names=[
-            "Instance",
-            "SCIP_Status",
-            "Solving_Time",
-            "Solving_Nodes",
-            "Objective value",
-            "Solutions_found"
-        ]
+        names=columns
     )
 
     print("RESULTS FOR: ", filename)
     print("Average solving time:", data["Solving_Time"].mean())
     print("Average number of nodes:", data["Solving_Nodes"].mean())
     print(data["SCIP_Status"].value_counts())
-    print("\n")
+    if check:
+        if (data["Check"] == "Fail").any():
+            print("ERROR - At least one check failed")
+        else:
+            print("All checks passed")
+    print("")
+
+def _check_results(instancename, model):
+    instance = os.path.splitext(instancename)[0]
+    path = os.path.join("instances", "knapPI_optimal.txt")
+
+    if model.getNSolsFound() > 0:
+        scip_optimal = int(model.getObjVal())
+
+        with open(path, 'r') as f:
+            for line in f:
+                inst, val = line.strip().split()
+                if inst == instance:
+                    if int(val) == scip_optimal:
+                        return True
+                    else:
+                        return False
+
+        return None
+
+    else:
+        return None

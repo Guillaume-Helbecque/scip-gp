@@ -89,9 +89,9 @@ def solve_instance(args, id, param_dict, output_filename):
     scip.optimize()
 
     if not args.no_output:
-        print_results(instancename, scip)
+        print_results(instancename, scip, args.check_output)
     if args.save_output:
-        store_results(instancename, scip, output_filename)
+        store_results(instancename, scip, output_filename, args.check_output)
 
 if __name__ == '__main__':
     compile_generator()
