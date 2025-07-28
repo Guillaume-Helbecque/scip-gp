@@ -45,7 +45,7 @@ def clean_files():
     Remove the compiled executable and all generated knapsack instance files.
     """
     binary_path = os.path.join("instances", "genhard.out")
-    files_path = os.path.join("instances", "knapPI_*.txt")
+    files_path = os.path.join("instances", "knapPI_*_*.txt")
 
     if os.path.exists(binary_path):
         os.remove(binary_path)
