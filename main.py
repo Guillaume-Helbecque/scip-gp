@@ -1,8 +1,6 @@
 import os
 import multiprocessing as mp
 
-print("Number of CPU : ", mp.cpu_count())
-
 try:
     work_dir = os.path.dirname(os.path.abspath(__file__))
 except NameError:
@@ -30,6 +28,8 @@ allowed_braching_rules = [
 ]
 
 args = parser.parse_args()
+
+if args.parmode: print(f"Number of CPU: {mp.cpu_count()}\n")
 
 branch_rule = allowed_braching_rules[args.b]
 
