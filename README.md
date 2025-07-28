@@ -69,12 +69,14 @@ The available options are listed below.
 - **`--nv`**: size of branching set (only if `-b 2`)
   - any positive integer (`1` by default)
 
-- **`--parmode`**: enable parallel solving of instances (using all available CPU cores)
+- **`--parmode`**: enable parallel solving of instances using all available CPU cores (only if `--solve-all`)
 
 #### Output parameters:
 
 - **`--no-output`**: disable standard output
 
 - **`--save-output`**: save output in a file
+
+- **`--check-output`**: check whether the SCIP solution matches the known optimal one, if one exists
 
 - **`--solve-all`**: solve all instances in series (`-i` is ignored)
