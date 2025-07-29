@@ -1,0 +1,215 @@
+from pyscipopt import Branchrule, SCIP_RESULT, SCIP_LPSOLSTAT, quicksum
+from itertools import combinations
+import numpy as np
+import math
+
+try:
+    import numba
+    from numba import cuda
+    if cuda.is_available():
+        # Safe to use numba.cuda
+        print("CUDA device is available")
+    else:
+        print("CUDA device not found")
+except ImportError:
+    print("Numba is not installed")
+
+threadsperblock = 32
+
+class StrongMultiBranchingRule_cu(Branchrule):
+
+    def __init__(self, scip, n):
+        self.scip = scip
+        self.n = n
+
+    def multiBranchVarVal(self, branch_cands, sum):
+        """
+        Branch on a set of variables. Specifically, it creates a down and a up
+        child node with constraint sum(x_i) <= floor(x*) and sum(x_i) >= ceil(x*),
+        respectively, where x* is the sum of x_i's LP solution values.
+        """
+        assert not self.scip.isFeasIntegral(sum), f"Sum {sum} is not fractional"
+
+        sum_floor = math.floor(sum)
+
+        if sum_floor == 0:
+            # This special case implies x_i <= 0 for all i for the down child.
+            child_down = self.scip.createChild(0, 0.0)
+            for cand in branch_cands:
+                self.scip.chgVarUbNode(child_down, cand, 0)
+
+            child_up = self.scip.createChild(0, 0.0)
+            cons_up = self.scip.createConsFromExpr(
+                quicksum(branch_cands) >= 1,
+                local=True,
+                # removable=True,
+                # propagate=True,
+                # stickingatnode=True
+            )
+            self.scip.addConsNode(child_up, cons_up)
+
+        elif sum_floor + 1 == len(branch_cands):
+            # This special case implies x_i <= 0 for all i for the up child.
+            child_down = self.scip.createChild(0, 0.0)
+            cons_down = self.scip.createConsFromExpr(
+                quicksum(branch_cands) <= sum_floor,
+                local=True,
+                # removable=True,
+                # propagate=True,
+                # stickingatnode=True
+            )
+            self.scip.addConsNode(child_down, cons_down)
+
+            child_up = self.scip.createChild(0, 0.0)
+            for cand in branch_cands:
+                self.scip.chgVarLbNode(child_up, cand, 1)
+
+        else:
+            child_down = self.scip.createChild(0, 0.0)
+            cons_down = self.scip.createConsFromExpr(
+                quicksum(branch_cands) <= sum_floor,
+                local=True,
+                # removable=True,
+                # propagate=True,
+                # stickingatnode=True
+            )
+            self.scip.addConsNode(child_down, cons_down)
+
+            child_up = self.scip.createChild(0, 0.0)
+            cons_up = self.scip.createConsFromExpr(
+                quicksum(branch_cands) >= sum_floor + 1,
+                local=True,
+                # removable=True,
+                # propagate=True,
+                # stickingatnode=True
+            )
+            self.scip.addConsNode(child_up, cons_up)
+
+        return child_down, None, child_up
+
+    def compute_score(self, var_set, s):
+        lpobjval = self.scip.getLPObjVal()
+
+        s_floor = math.floor(s)
+        s_ceil = math.ceil(s)
+
+        # ---- Down branch ----
+        self.scip.startProbing()
+        cons_down = self.scip.createConsFromExpr(quicksum(var_set) <= s_floor, local=True)
+        self.scip.addConsLocal(cons_down)
+        self.scip.constructLP()
+        self.scip.solveProbingLP(itlim=200)
+        down_inf = (self.scip.getLPSolstat() != SCIP_LPSOLSTAT.OPTIMAL)
+        bound_down = None if down_inf else self.scip.getLPObjVal()
+        self.scip.endProbing()
+
+        # ---- Up branch ----
+        self.scip.startProbing()
+        cons_up = self.scip.createConsFromExpr(quicksum(var_set) >= s_ceil, local=True)
+        self.scip.addConsLocal(cons_up)
+        self.scip.constructLP()
+        self.scip.solveProbingLP(itlim=200)
+        up_inf = (self.scip.getLPSolstat() != SCIP_LPSOLSTAT.OPTIMAL)
+        bound_up = None if up_inf else self.scip.getLPObjVal()
+        self.scip.endProbing()
+
+        # if down_inf and up_inf:
+        #     return {"result": SCIP_RESULT.CUTOFF}
+
+        if not down_inf:
+            down_gain = max([bound_down - lpobjval, 0])
+        else:
+            down_gain = 0
+        if not up_inf:
+            up_gain = max([bound_up - lpobjval, 0])
+        else:
+            up_gain = 0
+
+        score = max(down_gain, up_gain)
+        # score = self.scip.getBranchScoreMultiple(branch_cands[idx_set], [down_gain, up_gain])
+
+        return score, bound_down, bound_up
+
+    @cuda.jit
+    def compute_all_scores(self, scores, bounds_down, bounds_up, vars_set, vals_set, cands):
+        # NOTE: we only need the combination with at least one fractional variable
+        i = 0
+        for idx_set in cands:
+            var_set = [vars_set[i] for i in idx_set]
+            s = sum(vals_set[i] for i in idx_set)
+
+            if abs(s - round(s)) < 1e-6:
+                i += 1
+                continue
+
+            scores[i], bounds_down[i], bounds_up[i] = self.compute_score(var_set, s)
+            i += 1
+
+        return scores, bounds_down, bounds_up
+
+    def branchexeclp(self, allowaddcons):
+        # Get branching candidates
+        branch_cands, branch_cand_sols, branch_cand_fracs, \
+            ncands, npriocands, nimplcands = self.scip.getLPBranchCands()
+
+        # NOTE: 'nvar' is in fact the number of items 'n' (if no transformation occurs)
+        nvar = self.scip.getNVars()
+        vars = self.scip.getVars()
+        vals = [self.scip.getSolVal(None, var) for var in vars]
+
+        if ((npriocands == 1) and (self.n == 1)):
+            self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
+            return {"result": SCIP_RESULT.BRANCHED}
+
+        # best_score = -self.scip.infinity()
+        best_set = None
+        best_sum = None
+        best_bound_down = None
+        best_bound_up = None
+
+        real_n = nvar if (nvar < self.n) else self.n
+
+        cands = list(combinations(range(nvar), real_n))
+        cands_size = math.comb(nvar, real_n)
+
+        # Calculate the number of thread blocks in the grid
+        blockspergrid = (cands_size + (threadsperblock - 1)) // threadsperblock
+
+        # Allocate arrays on device
+        d_scores = cuda.to_device(np.full(cands_size, -self.scip.infinity()))
+        d_bounds_down = cuda.to_device(np.zeros(cands_size))
+        d_bounds_up = cuda.to_device(np.zeros(cands_size))
+
+        # Launch CUDA kernel
+        scores, bounds_down, bounds_up = self.compute_all_scores[blockspergrid, threadsperblock](d_scores, d_bounds_down, d_bounds_up, vars, vals, cands)
+
+        # Device-to-host copy
+        scores = d_scores.copy_to_host()
+        bounds_down = d_bounds_down.copy_to_host()
+        bounds_up = d_bounds_up.copy_to_host()
+
+        best_score = np.max(scores)
+        if best_score > -self.scip.infinity():
+            best_idx = np.argmax(scores)
+            best_set = cands[best_idx]
+            best_sum = sum(vals[i] for i in best_set)
+            best_down_bound = bounds_down[best_idx]
+            best_up_bound = bounds_up[best_idx]
+
+        if best_set is None:
+            return {"result": SCIP_RESULT.DIDNOTRUN}
+
+        child_down, child_eq, child_up = self.multiBranchVarVal(
+            [vars[i] for i in best_set], best_sum)
+
+        # Update the bounds of the down node and up node. Some cols might not exist due to pricing
+        if self.scip.allColsInLP():
+            if child_down is not None and best_down_bound is not None:
+                self.scip.updateNodeLowerbound(child_down, best_down_bound)
+            if child_up is not None and best_up_bound is not None:
+                self.scip.updateNodeLowerbound(child_up, best_up_bound)
+
+        return {"result": SCIP_RESULT.BRANCHED}
+
+if __name__ == "__main__":
+    print("hello, world")
