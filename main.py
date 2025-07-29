@@ -44,7 +44,7 @@ param_dict = {
     "misc/usesymmetry": 5,
 }
 
-def setBranchingRule(scip):
+def setBranchingRule(scip, cuda_support):
     """
     Configure and set the SCIP branching rule.
 
@@ -62,7 +62,12 @@ def setBranchingRule(scip):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
         case "customStrongMultiBranching":
-            custom_branch_rule = StrongMultiBranchingRule(scip, args.nv)
+            if cuda_support:
+                from branching.StrongMultiBranchingRule_cu import StrongMultiBranchingRule_cu
+                custom_branch_rule = StrongMultiBranchingRule_cu(scip, args.nv)
+            else:
+                custom_branch_rule = StrongMultiBranchingRule(scip, args.nv)
+
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
@@ -85,7 +90,7 @@ def solve_instance(args, id, param_dict, output_filename):
     scip.setPresolve(SCIP_PARAMSETTING.OFF)
     scip.setSeparating(SCIP_PARAMSETTING.OFF)
     scip.hideOutput()
-    setBranchingRule(scip)
+    setBranchingRule(scip, args.cuda)
     scip.optimize()
 
     if not args.no_output:

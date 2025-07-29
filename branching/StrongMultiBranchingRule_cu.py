@@ -1,18 +1,11 @@
 from pyscipopt import Branchrule, SCIP_RESULT, SCIP_LPSOLSTAT, quicksum
 from itertools import combinations
+from numba import cuda
 import numpy as np
 import math
 
-try:
-    import numba
-    from numba import cuda
-    if cuda.is_available():
-        # Safe to use numba.cuda
-        print("CUDA device is available")
-    else:
-        print("CUDA device not found")
-except ImportError:
-    print("Numba is not installed")
+if not cuda.is_available():
+    exit("ERROR: CUDA device not found")
 
 threadsperblock = 32
 
