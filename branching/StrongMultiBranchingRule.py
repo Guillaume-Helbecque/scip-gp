@@ -3,8 +3,6 @@ from itertools import combinations
 import numpy as np
 import math
 
-debug = False
-
 class StrongMultiBranchingRule(Branchrule):
 
     def __init__(self, scip, n):
@@ -114,27 +112,19 @@ class StrongMultiBranchingRule(Branchrule):
         else:
             up_gain = 0
 
-        if debug: print(f"down inf = {down_inf}, up inf = {up_inf}")
-        if debug: print(f"bound_down = {bound_down}, bound_up = {bound_up}")
-        if debug: print(f"down gain = {down_gain}, up gain = {up_gain}")
-
         score = max(down_gain, up_gain)
         # score = self.scip.getBranchScoreMultiple(branch_cands[idx_set], [down_gain, up_gain])
-        if debug: print(f"score = {score}")
 
         return score, bound_down, bound_up
 
     def compute_all_scores(self, vars_set, vals_set, cands, size):
         scores, bounds_down, bounds_up = np.full(size, -self.scip.infinity()), np.zeros(size), np.zeros(size)
 
-        if debug: print("START LOOP")
         # NOTE: we only need the combination with at least one fractional variable
         i = 0
         for idx_set in cands:
             var_set = [vars_set[i] for i in idx_set]
             s = sum(vals_set[i] for i in idx_set)
-
-            if debug: print(f"iter: {idx_set} = {var_set}, sum = {s}")
 
             if abs(s - round(s)) < 1e-6:
                 i += 1
@@ -142,8 +132,6 @@ class StrongMultiBranchingRule(Branchrule):
 
             scores[i], bounds_down[i], bounds_up[i] = self.compute_score(var_set, s)
             i += 1
-
-        if debug: print("END LOOP")
 
         return scores, bounds_down, bounds_up
 
@@ -161,14 +149,6 @@ class StrongMultiBranchingRule(Branchrule):
             self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
             return {"result": SCIP_RESULT.BRANCHED}
 
-        if debug: print("branch_cand_sols = ", branch_cand_sols)
-        if debug: print("sense : ", self.scip.getObjectiveSense())
-
-        if debug: print(self.scip.getConss())
-
-        if debug: print("Primal bound = ", self.scip.getPrimalbound())
-        if debug: print("Dual bound = ", self.scip.getDualbound())
-
         # best_score = -self.scip.infinity()
         best_set = None
         best_sum = None
@@ -176,10 +156,6 @@ class StrongMultiBranchingRule(Branchrule):
         best_bound_up = None
 
         real_n = nvar if (nvar < self.n) else self.n
-
-        if debug: print("n = ", self.n)
-        if debug: print("npriocands = ", npriocands)
-        if debug: print("n_real = ", real_n)
 
         cands = list(combinations(range(nvar), real_n))
         scores, bounds_down, bounds_up = self.compute_all_scores(vars, vals, cands, math.comb(nvar, real_n))
@@ -193,11 +169,7 @@ class StrongMultiBranchingRule(Branchrule):
             best_up_bound = bounds_up[best_idx]
 
         if best_set is None:
-            if debug: print("SCIP RESULT DIDNOTRUN")
             return {"result": SCIP_RESULT.DIDNOTRUN}
-
-        if debug: print("best set = ", best_set)
-        if debug: print("best sum = ", best_sum)
 
         child_down, child_eq, child_up = self.multiBranchVarVal(
             [vars[i] for i in best_set], best_sum)
@@ -208,8 +180,6 @@ class StrongMultiBranchingRule(Branchrule):
                 self.scip.updateNodeLowerbound(child_down, best_down_bound)
             if child_up is not None and best_up_bound is not None:
                 self.scip.updateNodeLowerbound(child_up, best_up_bound)
-
-        if debug: print("\n")
 
         return {"result": SCIP_RESULT.BRANCHED}
 
