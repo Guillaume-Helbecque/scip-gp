@@ -22,6 +22,7 @@ parser.add_argument('-b', type=int, default=1, choices = [0,1,2],
     help='branching rule index')
 parser.add_argument('--nv', type=int, default=1, help='size of branching set')
 parser.add_argument('--parmode', action='store_true', help='Enable parallel mode (only if --solve-all)')
+parser.add_argument('--cuda', action='store_true', help='Enable CUDA support')
 
 # Outputs
 parser.add_argument('--no-output', action='store_true', help='Disable output')

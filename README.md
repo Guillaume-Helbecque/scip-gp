@@ -71,6 +71,8 @@ The available options are listed below.
 
 - **`--parmode`**: enable parallel solving of instances using all available CPU cores (only if `--solve-all`)
 
+- **`--cuda`**: enable CUDA support to parallelize branching operator
+
 #### Output parameters:
 
 - **`--no-output`**: disable standard output
