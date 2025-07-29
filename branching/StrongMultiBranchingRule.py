@@ -101,8 +101,8 @@ class StrongMultiBranchingRule(Branchrule):
         bound_up = None if up_inf else self.scip.getLPObjVal()
         self.scip.endProbing()
 
-        if down_inf and up_inf:
-            return {"result": SCIP_RESULT.CUTOFF}
+        # if down_inf and up_inf:
+        #     return {"result": SCIP_RESULT.CUTOFF}
 
         if not down_inf:
             down_gain = max([bound_down - lpobjval, 0])

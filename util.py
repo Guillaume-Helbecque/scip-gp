@@ -49,9 +49,12 @@ def print_results(instancename, model, check):
         print("Solutions found   :", model.getNSolsFound())
     if check:
         c = _check_results(instancename, model)
-        if c: print("Check             : Success")
-        elif (c == False): print("Check             : Fail")
-        else: print("Check             : None")
+        if model.getStatus() == "optimal":
+            if c: print("Check             : Success")
+            elif (c == False): print("Check             : Fail")
+            else: print("Check             : None")
+        else:
+            print("Check             : None")
     print("")
 
 def store_results(instancename, model, filename, check):
@@ -107,9 +110,12 @@ def store_results(instancename, model, filename, check):
             )
 
         if check:
-            if c: f.write(f"{f'{'Success':<7}':>9}")
-            elif (c == False): f.write(f"{f'{'Fail':<7}':>9}")
-            else: f.write(f"{f'{'None':<7}':>9}")
+            if model.getStatus() == "optimal":
+                if c: f.write(f"{f'{'Success':<7}':>9}")
+                elif (c == False): f.write(f"{f'{'Fail':<7}':>9}")
+                else: f.write(f"{f'{'None':<7}':>9}")
+            else:
+                f.write(f"{f'{'None':<7}':>9}")
 
         f.write("\n")
 

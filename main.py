@@ -110,4 +110,8 @@ if __name__ == '__main__':
         solve_instance(args, args.i, param_dict, output_filename)
 
     clean_files()
-    print("All instances completed successfully.")
+
+    if args.solve_all:
+        print("All instances completed successfully.")
+    else:
+        print("The instance completed successfully.")
