@@ -1,10 +1,7 @@
 from pyscipopt import Branchrule, SCIP_RESULT, SCIP_LPSOLSTAT, quicksum
 from itertools import combinations
 import numpy as np
-from numba import cuda
 import math
-
-threadsperblock = 32
 
 class StrongMultiBranchingRule(Branchrule):
 
@@ -120,8 +117,8 @@ class StrongMultiBranchingRule(Branchrule):
 
         return score, bound_down, bound_up
 
-    @cuda.jit
-    def compute_all_scores(self, scores, bounds_down, bounds_up, vars_set, vals_set, cands):
+    def compute_all_scores(self, vars_set, vals_set, cands, size):
+        scores, bounds_down, bounds_up = np.full(size, -self.scip.infinity()), np.zeros(size), np.zeros(size)
         # NOTE: we only need the combination with at least one fractional variable
         i = 0
         for idx_set in cands:
@@ -160,23 +157,7 @@ class StrongMultiBranchingRule(Branchrule):
         real_n = nvar if (nvar < self.n) else self.n
 
         cands = list(combinations(range(nvar), real_n))
-        cands_size = math.comb(nvar, real_n)
-
-        # Calculate the number of thread blocks in the grid
-        blockspergrid = (cands_size + (threadsperblock - 1)) // threadsperblock
-
-        # Allocate arrays on device
-        d_scores = cuda.to_device(np.full(cands_size, -self.scip.infinity()))
-        d_bounds_down = cuda.to_device(np.zeros(cands_size))
-        d_bounds_up = cuda.to_device(np.zeros(cands_size))
-
-        # Launch CUDA kernel
-        scores, bounds_down, bounds_up = self.compute_all_scores[blockspergrid, threadsperblock](d_scores, d_bounds_down, d_bounds_up, vars, vals, cands)
-
-        # Device-to-host copy
-        scores = d_scores.copy_to_host()
-        bounds_down = d_bounds_down.copy_to_host()
-        bounds_up = d_bounds_up.copy_to_host()
+        scores, bounds_down, bounds_up = self.compute_all_scores(vars, vals, cands, math.comb(nvar, real_n))
 
         best_score = np.max(scores)
         if best_score > -self.scip.infinity():
