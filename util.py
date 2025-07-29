@@ -80,7 +80,10 @@ def store_results(instancename, model, filename, check):
 
     if check:
         c = _check_results(instancename, model)
-        header += f"{f'{'Check':<7}':>9}"
+        # NOTE: Nested f-strings allowed from Python 3.12+
+        # header += f"{f'{'Check':<7}':>9}"
+        formatted = f"{'Check':<7}"
+        header += f"{formatted:>9}"
 
     header += "\n"
 
@@ -105,17 +108,26 @@ def store_results(instancename, model, filename, check):
             )
         else:
             f.write(
-                f"{"":<17.1f}"
-                f"{"":<15}"
+                f"{'':<17}"
+                f"{'':<15}"
             )
 
         if check:
             if model.getStatus() == "optimal":
-                if c: f.write(f"{f'{'Success':<7}':>9}")
-                elif (c == False): f.write(f"{f'{'Fail':<7}':>9}")
-                else: f.write(f"{f'{'None':<7}':>9}")
+                # NOTE: Nested f-strings allowed from Python 3.12+
+                if c:
+                    formatted = f"{'Success':<7}"
+                    f.write(f"{formatted:>9}")
+                elif (c == False):
+                    formatted = f"{'Fail':<7}"
+                    f.write(f"{formatted:>9}")
+                else:
+                    formatted = f"{'None':<7}"
+                    f.write(f"{formatted:>9}")
+
             else:
-                f.write(f"{f'{'None':<7}':>9}")
+                formatted = f"{'None':<7}"
+                f.write(f"{formatted:>9}")
 
         f.write("\n")
 
