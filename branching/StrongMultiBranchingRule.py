@@ -1,6 +1,5 @@
 from pyscipopt import Branchrule, SCIP_RESULT, SCIP_LPSOLSTAT, quicksum
 from itertools import combinations
-import numpy as np
 import math
 
 class StrongMultiBranchingRule(Branchrule):
@@ -117,24 +116,6 @@ class StrongMultiBranchingRule(Branchrule):
 
         return score, bound_down, bound_up
 
-    def compute_all_scores(self, vars_set, vals_set, cands, size):
-        scores, bounds_down, bounds_up = np.full(size, -self.scip.infinity()), np.zeros(size), np.zeros(size)
-
-        # NOTE: we only need the combination with at least one fractional variable
-        i = 0
-        for idx_set in cands:
-            var_set = [vars_set[i] for i in idx_set]
-            s = sum(vals_set[i] for i in idx_set)
-
-            if abs(s - round(s)) < 1e-6:
-                i += 1
-                continue
-
-            scores[i], bounds_down[i], bounds_up[i] = self.compute_score(var_set, s)
-            i += 1
-
-        return scores, bounds_down, bounds_up
-
     def branchexeclp(self, allowaddcons):
         # Get branching candidates
         branch_cands, branch_cand_sols, branch_cand_fracs, \
@@ -149,7 +130,7 @@ class StrongMultiBranchingRule(Branchrule):
             self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
             return {"result": SCIP_RESULT.BRANCHED}
 
-        # best_score = -self.scip.infinity()
+        best_score = -self.scip.infinity()
         best_set = None
         best_sum = None
         best_bound_down = None
@@ -157,16 +138,23 @@ class StrongMultiBranchingRule(Branchrule):
 
         real_n = nvar if (nvar < self.n) else self.n
 
-        cands = list(combinations(range(nvar), real_n))
-        scores, bounds_down, bounds_up = self.compute_all_scores(vars, vals, cands, math.comb(nvar, real_n))
+        cand_indices = list(range(nvar))
+        # NOTE: we only need the combination with at least one fractional variable
+        for idx_set in combinations(cand_indices, real_n):
+            var_set = [vars[i] for i in idx_set]
+            s = sum(vals[i] for i in idx_set)
 
-        best_score = np.max(scores)
-        if best_score > -self.scip.infinity():
-            best_idx = np.argmax(scores)
-            best_set = cands[best_idx]
-            best_sum = sum(vals[i] for i in best_set)
-            best_down_bound = bounds_down[best_idx]
-            best_up_bound = bounds_up[best_idx]
+            if abs(s - round(s)) < 1e-6:
+                continue
+
+            score, bound_down, bound_up = self.compute_score(var_set, s)
+
+            if score > best_score:
+                best_score = score
+                best_set = idx_set
+                best_sum = s
+                best_down_bound = bound_down
+                best_up_bound = bound_up
 
         if best_set is None:
             return {"result": SCIP_RESULT.DIDNOTRUN}
