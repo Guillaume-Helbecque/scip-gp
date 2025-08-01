@@ -1,2 +1,3 @@
 pyscipopt
 pandas
+deap
