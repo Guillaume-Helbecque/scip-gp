@@ -1,31 +1,25 @@
-import operator
+from primitives import primitives
 import numpy
 import re
 
 from deap import base, creator, gp, tools, algorithms
-
-operations = {
-    'add': operator.add,
-    'mul': operator.mul,
-    'sub': operator.sub,
-    # 'protectedDiv': protectedDiv,
-    'lt': operator.lt,
-    'gt': operator.gt,
-    'eq': operator.eq
-}
 
 def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
     # Create fitness and individual
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
     pset = gp.PrimitiveSet("main", arity=4) # TODO: arity to determine
-    pset.addPrimitive(operator.add, 2)
-    pset.addPrimitive(operator.sub, 2)
-    pset.addPrimitive(operator.mul, 2)
-    # TODO: add division, but which one?
-    pset.addPrimitive(operator.lt, 2)
-    pset.addPrimitive(operator.gt, 2)
-    pset.addPrimitive(operator.eq, 2)
+
+    for p in primitives.values():
+        pset.addPrimitive(p, 2)
+
+    # pset.addPrimitive(operator.add, 2)
+    # pset.addPrimitive(operator.sub, 2)
+    # pset.addPrimitive(operator.mul, 2)
+    # # TODO: add division, but which one?
+    # pset.addPrimitive(operator.lt, 2)
+    # pset.addPrimitive(operator.gt, 2)
+    # pset.addPrimitive(operator.eq, 2)
 
     pset.renameArguments(ARG0="x")
     pset.renameArguments(ARG1="y")
@@ -102,9 +96,9 @@ def evaluate_expression(expr, context):
     match = re.match(func_pattern, expr)
     if match:
         func_name, args_str = match.groups()
-        if func_name in operations:
+        if func_name in primitives:
             args = parse_args(args_str, context)
-            return operations[func_name](*args)
+            return primitives[func_name](*args)
         else:
             raise ValueError(f"Unsupported function '{func_name}'")
     else:
