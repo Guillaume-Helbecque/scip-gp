@@ -12,10 +12,10 @@ except NameError:
 os.chdir(work_dir)
 
 from instances.generate_instances import compile_generator, generate_instance, clean_files
-from branching.StrongBranchingRule import StrongBranchingRule
-from branching.StrongMultiBranchingRule import StrongMultiBranchingRule
-from model.generate_model import create_model
-from util import parser, print_results, store_results, extract_results
+from scip_solver.custom_branching.StrongBranchingRule import StrongBranchingRule
+from scip_solver.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
+from scip_solver.generate_model import create_model
+from scip_solver.util import parser, print_results, store_results, extract_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 
