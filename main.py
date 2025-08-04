@@ -92,26 +92,29 @@ def solve_instance(args, id, param_dict, output_filename):
         print_results(instancename, scip, args.check_output)
     if args.save_output:
         store_results(instancename, scip, output_filename, args.check_output)
+    if not args.solve_all:
+        print("The instance completed successfully.")
+
+def solve_all_instances(args, param_dict, output_filename):
+
+    if args.parmode:
+        args_list = [(args, id, param_dict, output_filename) for id in range(1, args.s+1)]
+        with mp.Pool(processes=mp.cpu_count()) as pool:
+            pool.starmap(solve_instance, args_list)
+    else:
+        for id in range(1, args.s+1):
+            solve_instance(args, id, param_dict, output_filename)
+
+    print("All instances completed successfully.")
 
 if __name__ == '__main__':
     compile_generator()
 
     if args.solve_all:
         # Solve all instances in series (`S` in total)
-        if args.parmode:
-            args_list = [(args, id, param_dict, output_filename) for id in range(1, args.s + 1)]
-            with mp.Pool(processes=mp.cpu_count()) as pool:
-                pool.starmap(solve_instance, args_list)
-        else:
-            for id in range(1, args.s+1):
-                solve_instance(args, id, param_dict, output_filename)
+        solve_all_instances(args, param_dict, output_filename)
     else:
         # Solve only the instance given by `-i`
         solve_instance(args, args.i, param_dict, output_filename)
 
     clean_files()
-
-    if args.solve_all:
-        print("All instances completed successfully.")
-    else:
-        print("The instance completed successfully.")
