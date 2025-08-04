@@ -1,5 +1,5 @@
 from evaluate_individual import evaluate
-from primitives import primitives
+from gp_parameters import primitives
 import numpy
 
 from deap import base, creator, gp, tools, algorithms

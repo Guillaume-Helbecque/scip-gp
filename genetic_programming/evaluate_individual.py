@@ -1,4 +1,4 @@
-from primitives import primitives
+from gp_parameters import primitives
 import re
 
 # Dummy evaluation for testing
