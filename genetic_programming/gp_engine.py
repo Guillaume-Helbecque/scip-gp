@@ -1,3 +1,11 @@
+# NOTE: The following three lines are necessary to specify that scip-rl is the
+# root directory from which modules are searched. This is only needed when
+# executing gp_engine.py as a main file.
+# TODO: Can I avoid this somehow?
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from evaluate_individual import evaluate
 from gp_parameters import primitives
 import numpy
@@ -5,6 +13,9 @@ import numpy
 from deap import base, creator, gp, tools, algorithms
 
 def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
+    """
+    TODO
+    """
     # Create fitness and individual
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 

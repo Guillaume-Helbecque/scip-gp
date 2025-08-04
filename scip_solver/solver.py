@@ -14,6 +14,9 @@ allowed_braching_rules = [
 ]
 
 def parse_args():
+    """
+    TODO
+    """
     args = parser.parse_args()
 
     param_dict = {
@@ -85,7 +88,9 @@ def solve_instance(args, id, param_dict, output_filename):
         print("The instance completed successfully.")
 
 def solve_all_instances(args, param_dict, output_filename):
-
+    """
+    TODO
+    """
     if args.parmode:
         args_list = [(args, id, param_dict, output_filename) for id in range(1, args.s+1)]
         with mp.Pool(processes=mp.cpu_count()) as pool:

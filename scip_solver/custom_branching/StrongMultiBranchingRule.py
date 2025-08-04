@@ -3,6 +3,9 @@ from itertools import combinations
 import math
 
 class StrongMultiBranchingRule(Branchrule):
+    """
+    TODO
+    """
 
     def __init__(self, scip, n):
         self.scip = scip

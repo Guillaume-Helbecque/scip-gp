@@ -167,6 +167,9 @@ def extract_results(filename, check):
     print("")
 
 def _check_results(instancename, model):
+    """
+    TODO
+    """
     instance = os.path.splitext(instancename)[0]
     path = os.path.join("instances", "knapPI_optimal.txt")
 

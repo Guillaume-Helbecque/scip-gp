@@ -4,8 +4,10 @@ from scip_solver.solver import parse_args, solve_instance, solve_all_instances
 import os
 
 try:
+    # Standard case when running from a .py file
     work_dir = os.path.dirname(os.path.abspath(__file__))
 except NameError:
+    # Fallback for interactive environments
     import inspect
     frame = inspect.currentframe()
     filename = inspect.getfile(frame)
