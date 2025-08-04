@@ -13,14 +13,6 @@ def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
     for p in primitives.values():
         pset.addPrimitive(p, 2)
 
-    # pset.addPrimitive(operator.add, 2)
-    # pset.addPrimitive(operator.sub, 2)
-    # pset.addPrimitive(operator.mul, 2)
-    # # TODO: add division, but which one?
-    # pset.addPrimitive(operator.lt, 2)
-    # pset.addPrimitive(operator.gt, 2)
-    # pset.addPrimitive(operator.eq, 2)
-
     pset.renameArguments(ARG0="x")
     pset.renameArguments(ARG1="y")
     pset.renameArguments(ARG2="z")
