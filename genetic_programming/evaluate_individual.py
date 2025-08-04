@@ -3,22 +3,18 @@ import re
 
 # Dummy evaluation for testing
 def evaluate(individual):
-    print(str(individual))
-    print("x=0, y=1, z=2, t=3")
-    print(comp_policy_as_a_function(str(individual),0,1,2,3))
-    print()
     # TODO: this function should evaluate individual using SCIP solver
-    return 1.0,
+    return comp_policy_as_a_function(str(individual),0,1,2,3),
 
 def comp_policy_as_a_function(comp_policy, x, y, z, t):
     delimiters = ["(", ",", " ", ")"]
-    #string = self.comp_policy
     context = {
-            'x': x,
-            'y': y,
-            'z': z,
-            't': t,
-        }
+        'x': x,
+        'y': y,
+        'z': z,
+        't': t,
+    }
+
     return evaluate_expression(comp_policy, context)
 
 def parse_args(args, context):

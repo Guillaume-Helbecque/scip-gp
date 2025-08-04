@@ -6,6 +6,10 @@ def protecteddiv(a, b):
     except ZeroDivisionError:
         return 1
 
+def if_then_else(input, output1, output2):
+    return output1 if input else output2
+
+# TODO: add if_then_else to primitives. How to specify arity in dict?
 primitives = {
     'add': operator.add,
     'sub': operator.sub,

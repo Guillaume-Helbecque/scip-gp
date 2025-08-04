@@ -170,6 +170,3 @@ class StrongMultiBranchingRule(Branchrule):
                 self.scip.updateNodeLowerbound(child_up, best_up_bound)
 
         return {"result": SCIP_RESULT.BRANCHED}
-
-if __name__ == "__main__":
-    print("hello, world")
