@@ -26,7 +26,7 @@ def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
     # Create evolutionary tools
-    toolbox.register("evaluate", evaluate)
+    toolbox.register("evaluate", evaluate, pset=pset)
     toolbox.register("mate", gp.cxOnePoint)
     toolbox.register("mutate", gp.mutNodeReplacement, pset=pset)
     toolbox.register("select", tools.selTournament, tournsize=3)
