@@ -38,7 +38,7 @@ def parse_args():
 
     return args, param_dict, output_filename
 
-def setBranchingRule(scip, branch_id, num_vars, function = lambda x,y: 1):
+def setBranchingRule(scip, branch_id, num_vars, function):
     """
     Configure and set the SCIP branching rule.
 
@@ -66,7 +66,7 @@ def setBranchingRule(scip, branch_id, num_vars, function = lambda x,y: 1):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
-def solve_instance(args, id, param_dict, output_filename):
+def solve_instance(args, id, param_dict, output_filename, function = lambda x,y: 1):
     """
     Solve a single optimization instance using SCIP.
 
@@ -83,7 +83,7 @@ def solve_instance(args, id, param_dict, output_filename):
     scip.setPresolve(SCIP_PARAMSETTING.OFF)
     scip.setSeparating(SCIP_PARAMSETTING.OFF)
     scip.hideOutput()
-    setBranchingRule(scip, args.b, args.nv)
+    setBranchingRule(scip, args.b, args.nv, function)
     scip.optimize()
 
     if not args.no_output:
@@ -93,16 +93,16 @@ def solve_instance(args, id, param_dict, output_filename):
     if not args.solve_all:
         print("The instance completed successfully.")
 
-def solve_all_instances(args, param_dict, output_filename):
+def solve_all_instances(args, param_dict, output_filename, function = lambda x,y: 1):
     """
     TODO
     """
     if args.parmode:
-        args_list = [(args, id, param_dict, output_filename) for id in range(1, args.s+1)]
+        args_list = [(args, id, param_dict, output_filename, function) for id in range(1, args.s+1)]
         with mp.Pool(processes=mp.cpu_count()) as pool:
             pool.starmap(solve_instance, args_list)
     else:
         for id in range(1, args.s+1):
-            solve_instance(args, id, param_dict, output_filename)
+            solve_instance(args, id, param_dict, output_filename, function)
 
     print("All instances completed successfully.")
