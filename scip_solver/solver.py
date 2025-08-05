@@ -90,8 +90,6 @@ def solve_instance(args, id, param_dict, output_filename, function = lambda x,y:
         print_results(instancename, scip, args.check_output)
     if args.save_output:
         store_results(instancename, scip, output_filename, args.check_output)
-    if not args.solve_all:
-        print("The instance completed successfully.")
 
 def solve_all_instances(args, param_dict, output_filename, function = lambda x,y: 1):
     """
@@ -104,5 +102,3 @@ def solve_all_instances(args, param_dict, output_filename, function = lambda x,y
     else:
         for id in range(1, args.s+1):
             solve_instance(args, id, param_dict, output_filename, function)
-
-    print("All instances completed successfully.")

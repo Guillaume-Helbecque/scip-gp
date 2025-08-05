@@ -22,8 +22,10 @@ if __name__ == '__main__':
     if args.solve_all:
         # Solve all instances in series (`S` in total)
         solve_all_instances(args, param_dict, output_filename)
+        print("All instances completed successfully.")
     else:
         # Solve only the instance given by `-i`
         solve_instance(args, args.i, param_dict, output_filename)
+        print("The instance completed successfully.")
 
     clean_files()
