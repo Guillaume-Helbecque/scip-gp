@@ -2,6 +2,8 @@ from pyscipopt import Branchrule, SCIP_RESULT, SCIP_LPSOLSTAT, quicksum
 from itertools import combinations
 import math
 
+NMAX = 5
+
 class StrongMultiBranchingRule_gp(Branchrule):
     """
     TODO
@@ -130,7 +132,7 @@ class StrongMultiBranchingRule_gp(Branchrule):
         vals = [self.scip.getSolVal(None, var) for var in vars]
 
         # Compute n dynamically using GP function
-        n = self.f(self.scip.getDepth(), self.scip.getNVars)
+        n = clamp_integer(self.f(self.scip.getDepth(), self.scip.getNVars()))
 
         if ((npriocands == 1) and (n == 1)):
             self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
@@ -176,3 +178,9 @@ class StrongMultiBranchingRule_gp(Branchrule):
                 self.scip.updateNodeLowerbound(child_up, best_up_bound)
 
         return {"result": SCIP_RESULT.BRANCHED}
+
+def clamp_integer(value, N=NMAX):
+    """
+    Clamps an integer value to the range [1, N].
+    """
+    return max(1, min(value, N))
