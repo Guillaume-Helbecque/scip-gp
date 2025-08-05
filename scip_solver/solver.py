@@ -23,9 +23,11 @@ def parse_args():
 
     param_dict = {
         "nodeselection/dfs/stdpriority": 1073741823,
-        "limits/time": args.timelimit,
         "misc/usesymmetry": 5,
     }
+
+    if args.timelimit is not None:
+        param_dict.update({"limits/time": args.timelimit})
 
     if args.parmode: print(f"Number of CPU: {mp.cpu_count()}\n")
 

@@ -16,7 +16,7 @@ parser.add_argument('-s', type=int, default=100,
 parser.add_argument('-i', type=int, default=1, help='instance index')
 
 # Solver
-parser.add_argument('--timelimit', type=int, default=1e+20,
+parser.add_argument('--timelimit', type=int,
     help='time limit for SCIP solving (seconds)')
 parser.add_argument('-b', type=int, default=1, choices = [0,1,2,3],
     help='branching rule index')
