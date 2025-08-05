@@ -1,6 +1,7 @@
 from instances.generate_instances import generate_instance
 from scip_solver.custom_branching.StrongBranchingRule import StrongBranchingRule
 from scip_solver.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
+from scip_solver.custom_branching.StrongMultiBranchingRule_gp import StrongMultiBranchingRule_gp
 from scip_solver.util import parser, print_results, store_results, extract_results
 from scip_solver.generate_model import create_model
 
@@ -11,6 +12,7 @@ allowed_braching_rules = [
     "default",
     "customStrongBranching",
     "customStrongMultiBranching",
+    "customStrongMultiBranching_gp"
 ]
 
 def parse_args():
@@ -36,7 +38,7 @@ def parse_args():
 
     return args, param_dict, output_filename
 
-def setBranchingRule(scip, branch_id, num_vars):
+def setBranchingRule(scip, branch_id, num_vars, function = lambda x,y: 1):
     """
     Configure and set the SCIP branching rule.
 
@@ -57,6 +59,10 @@ def setBranchingRule(scip, branch_id, num_vars):
                 priority=536870911, maxdepth=-1, maxbounddist=1)
         case "customStrongMultiBranching":
             custom_branch_rule = StrongMultiBranchingRule(scip, num_vars)
+            scip.includeBranchrule(custom_branch_rule, "", "",
+                priority=536870911, maxdepth=-1, maxbounddist=1)
+        case "customStrongMultiBranching_gp":
+            custom_branch_rule = StrongMultiBranchingRule_gp(scip, function)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 

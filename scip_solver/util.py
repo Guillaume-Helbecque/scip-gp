@@ -18,7 +18,7 @@ parser.add_argument('-i', type=int, default=1, help='instance index')
 # Solver
 parser.add_argument('--timelimit', type=int, default=1e+20,
     help='time limit for SCIP solving (seconds)')
-parser.add_argument('-b', type=int, default=1, choices = [0,1,2],
+parser.add_argument('-b', type=int, default=1, choices = [0,1,2,3],
     help='branching rule index')
 parser.add_argument('--nv', type=int, default=1, help='size of branching set')
 parser.add_argument('--parmode', action='store_true', help='Enable parallel mode (only if --solve-all)')

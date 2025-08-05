@@ -65,6 +65,7 @@ The available options are listed below.
   - `0`: SCIP default strong branching rule
   - `1`: custom strong branching rule
   - `2`: custom multi-variable strong branching rule
+  - `3`: custom multi-variable strong branching rule with GP function
 
 - **`--nv`**: size of branching set (only if `-b 2`)
   - any positive integer (`1` by default)
