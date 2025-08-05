@@ -22,7 +22,7 @@ def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
     pset = gp.PrimitiveSet("main", arity=4) # TODO: arity to determine
 
     for p in primitives.values():
-        pset.addPrimitive(p, 2)
+        pset.addPrimitive(p[0], p[1])
 
     pset.renameArguments(ARG0="x")
     pset.renameArguments(ARG1="y")

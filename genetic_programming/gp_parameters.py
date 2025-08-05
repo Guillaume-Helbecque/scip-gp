@@ -9,22 +9,22 @@ def protecteddiv(a, b):
 def if_then_else(input, output1, output2):
     return output1 if input else output2
 
-# TODO: add if_then_else to primitives. How to specify arity in dict?
 primitives = {
-    'add': operator.add,
-    'sub': operator.sub,
-    'mul': operator.mul,
-    # 'truediv': operator.truediv,
-    # 'floordiv': operator.floordiv,
-    'protecteddiv': protecteddiv,
-    # 'pow': operator.pow,
-    # 'mod': operator.mod,
-    # 'neg': operator.neg,
-    # 'pos': operator.pos,
-    # 'lt': operator.lt,
-    # 'le': operator.le,
-    # 'eq': operator.eq,
-    # 'ne': operator.ne,
-    # 'ge': operator.ge,
-    # 'gt': operator.gt
+    'add': (operator.add, 2),
+    'sub': (operator.sub, 2),
+    'mul': (operator.mul, 2),
+    # 'truediv': (operator.truediv, 2),
+    # 'floordiv': (operator.floordiv, 2),
+    'protecteddiv': (protecteddiv, 2),
+    # 'pow': (operator.pow, 2),
+    # 'mod': (operator.mod, 2),
+    # 'neg': (operator.neg, 2),
+    # 'pos': (operator.pos, 2),
+    # 'lt': (operator.lt, 2),
+    # 'le': (operator.le, 2),
+    # 'eq': (operator.eq, 2),
+    # 'ne': (operator.ne, 2),
+    # 'ge': (operator.ge, 2),
+    # 'gt': (operator.gt, 2),
+    # 'if_then_else', (if_then_else, 3)
 }
