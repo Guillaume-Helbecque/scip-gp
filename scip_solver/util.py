@@ -43,6 +43,7 @@ def print_results(instancename, model, check):
     print("Instance          :", instancename)
     print("SCIP Status       :", model.getStatus())
     print("Solving Time (sec):", model.getSolvingTime())
+    print("Gap               :", model.getGap())
     print("Solving Nodes     :", model.getNNodes())
     if model.getNSolsFound() > 0:
         print("Objective value   :", model.getObjVal())
@@ -73,6 +74,7 @@ def store_results(instancename, model, filename, check):
         f"{'Instance':<26}"
         f"{'SCIP Status':<13}"
         f"{'Solving Time (sec)':<20}"
+        f"{'Gap':<8}"
         f"{'Solving Nodes':<15}"
         f"{'Objective value':<17}"
         f"{'Solutions found':<15}"
@@ -98,6 +100,7 @@ def store_results(instancename, model, filename, check):
             f"{instancename:<26}"
             f"{model.getStatus():<13}"
             f"{model.getSolvingTime():<20.4f}"
+            f"{model.getGap():<8.4f}"
             f"{model.getNNodes():<15}"
         )
 
@@ -139,6 +142,7 @@ def extract_results(filename, check):
         "Instance",
         "SCIP_Status",
         "Solving_Time",
+        "Gap",
         "Solving_Nodes",
         "Objective value",
         "Solutions_found"
@@ -157,6 +161,7 @@ def extract_results(filename, check):
 
     print("RESULTS FOR: ", filename)
     print("Average solving time:", data["Solving_Time"].mean())
+    print("Average gap:", data["Gap"].mean())
     print("Average number of nodes:", data["Solving_Nodes"].mean())
     print(data["SCIP_Status"].value_counts())
     if check:
