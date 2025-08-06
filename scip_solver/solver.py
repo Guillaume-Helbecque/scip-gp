@@ -8,6 +8,10 @@ from scip_solver.generate_model import create_model
 from pyscipopt import Model, SCIP_PARAMSETTING
 import multiprocessing as mp
 
+# NOTE: the following function is only available on POSIX systems.
+mp.set_start_method("fork", force=True)
+global_func = None
+
 allowed_braching_rules = [
     "default",
     "customStrongBranching",
@@ -29,7 +33,7 @@ def parse_args():
     if args.timelimit is not None:
         param_dict.update({"limits/time": args.timelimit})
 
-    if args.parmode: print(f"Number of CPU: {mp.cpu_count()}\n")
+    # if args.parmode: print(f"Number of CPU: {mp.cpu_count()}\n")
 
     branch_rule = allowed_braching_rules[args.b]
 
@@ -78,6 +82,10 @@ def solve_instance(args, id, param_dict, output_filename, function = lambda x,y:
 
     Optionally prints and/or saves results according to the user arguments.
     """
+    if args.parmode:
+        global global_func
+        function = global_func
+
     instancename = generate_instance(args.n, args.t, args.r, id, args.s)
     scip = create_model(instancename)
     scip.setParams(param_dict)
@@ -98,7 +106,10 @@ def solve_all_instances(args, param_dict, output_filename, function = lambda x,y
     TODO
     """
     if args.parmode:
-        args_list = [(args, id, param_dict, output_filename, function) for id in range(1, args.s+1)]
+        global global_func
+        global_func = function
+
+        args_list = [(args, id, param_dict, output_filename) for id in range(1, args.s+1)]
         with mp.Pool(processes=mp.cpu_count()) as pool:
             pool.starmap(solve_instance, args_list)
     else:
