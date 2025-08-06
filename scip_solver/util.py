@@ -134,7 +134,7 @@ def store_results(instancename, model, filename, check):
 
         f.write("\n")
 
-def extract_results(filename, check):
+def extract_results(filename, check, show_output=True):
     """
     Load and summarize results from an output file containing SCIP results.
     """
@@ -159,17 +159,24 @@ def extract_results(filename, check):
         names=columns
     )
 
-    print("RESULTS FOR: ", filename)
-    print("Average solving time:", data["Solving_Time"].mean())
-    print("Average gap:", data["Gap"].mean())
-    print("Average number of nodes:", data["Solving_Nodes"].mean())
-    print(data["SCIP_Status"].value_counts())
-    if check:
-        if (data["Check"] == "Fail").any():
-            print("ERROR - At least one check failed")
-        else:
-            print("All checks passed")
-    print("")
+    mean_time = data["Solving_Time"].mean()
+    mean_gap = data["Gap"].mean()
+    mean_nodes = data["Solving_Nodes"].mean()
+
+    if show_output:
+        print("RESULTS FOR: ", filename)
+        print("Average solving time:", mean_time)
+        print("Average gap:", mean_gap)
+        print("Average number of nodes:", mean_nodes)
+        print(data["SCIP_Status"].value_counts())
+        if check:
+            if (data["Check"] == "Fail").any():
+                print("ERROR - At least one check failed")
+            else:
+                print("All checks passed")
+        print("")
+
+    return mean_time, mean_gap, mean_nodes
 
 def _check_results(instancename, model):
     """

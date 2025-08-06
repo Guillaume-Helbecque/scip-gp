@@ -1,13 +1,5 @@
-# NOTE: The following three lines are necessary to specify that scip-rl is the
-# root directory from which modules are searched. This is only needed when
-# executing gp_engine.py as a main file.
-# TODO: Can I avoid this somehow?
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from evaluate_individual import evaluate
-from gp_parameters import primitives
+from genetic_programming.evaluate_individual import evaluate
+from genetic_programming.gp_parameters import primitives
 import numpy
 
 from deap import base, creator, gp, tools, algorithms
@@ -19,15 +11,15 @@ def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
     # Create fitness and individual
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
-    pset = gp.PrimitiveSet("main", arity=4) # TODO: arity to determine
+    pset = gp.PrimitiveSet("main", arity=2) # TODO: arity to determine
 
     for p in primitives.values():
         pset.addPrimitive(p[0], p[1])
 
-    pset.renameArguments(ARG0="x")
-    pset.renameArguments(ARG1="y")
-    pset.renameArguments(ARG2="z")
-    pset.renameArguments(ARG3="t")
+    pset.renameArguments(ARG0="getDepth")
+    pset.renameArguments(ARG1="getNVars")
+    # pset.renameArguments(ARG2="getEstimate")
+    # pset.renameArguments(ARG3="getLowerbound")
 
     creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin, pset=pset)
 
@@ -55,6 +47,3 @@ def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
         ngen=nb_gen, stats=stats)
 
     return pop, logbook
-
-if __name__ == "__main__":
-    run_gp()

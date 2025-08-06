@@ -1,5 +1,6 @@
 from instances.generate_instances import compile_generator, clean_files
 from scip_solver.solver import parse_args, solve_instance, solve_all_instances
+from genetic_programming.gp_engine import run_gp
 
 import os
 
@@ -27,5 +28,6 @@ if __name__ == '__main__':
         # Solve only the instance given by `-i`
         solve_instance(args, args.i, param_dict, output_filename)
         print("The instance completed successfully.")
+    run_gp()
 
     clean_files()
