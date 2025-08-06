@@ -43,7 +43,8 @@ def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
 
     # Launch evolutionary algorithm
     pop_init = toolbox.population(n=initial_pop)
+    hof = tools.HallOfFame(1) # store the best individual
     pop, logbook = algorithms.eaSimple(pop_init, toolbox, cxpb=mate, mutpb=mutate,
-        ngen=nb_gen, stats=stats)
+        ngen=nb_gen, stats=stats, halloffame=hof)
 
-    return pop, logbook
+    return pop, logbook, hof

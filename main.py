@@ -28,6 +28,9 @@ if __name__ == '__main__':
         # Solve only the instance given by `-i`
         solve_instance(args, args.i, param_dict, output_filename)
         print("The instance completed successfully.")
-    run_gp()
+    pop, logbook, hof = run_gp()
+
+    for ind in hof:
+        print(ind)
 
     clean_files()
