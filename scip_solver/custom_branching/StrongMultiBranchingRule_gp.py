@@ -132,7 +132,7 @@ class StrongMultiBranchingRule_gp(Branchrule):
         vals = [self.scip.getSolVal(None, var) for var in vars]
 
         # Compute n dynamically using GP function
-        n = clamp_integer(self.f(self.scip.getDepth(), self.scip.getNVars()))
+        n = clamp_integer(int(self.f(self.scip.getDepth(), self.scip.getNVars())))
 
         if ((npriocands == 1) and (n == 1)):
             self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
