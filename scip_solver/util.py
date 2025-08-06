@@ -96,11 +96,15 @@ def store_results(instancename, model, filename, check):
 
     # Append a new data line
     with open(filename, "a") as f:
+        # NOTE: By default, SCIP returns gap=1e+20 if no solution is found
+        gap = model.getGap()
+        gap_str = f"{'1e+20':<8}" if gap == 1e20 else f"{gap:<8.4f}"
+
         f.write(
             f"{instancename:<26}"
             f"{model.getStatus():<13}"
             f"{model.getSolvingTime():<20.4f}"
-            f"{model.getGap():<8.4f}"
+            f"{gap_str}"
             f"{model.getNNodes():<15}"
         )
 
