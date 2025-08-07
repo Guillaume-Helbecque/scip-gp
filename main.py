@@ -1,6 +1,10 @@
 from instances.generate_instances import compile_generator, clean_files
+
 from scip_solver.solver import parse_args, solve_instance, solve_all_instances
+from scip_solver.util import extract_results
+
 from genetic_programming.gp_engine import run_gp
+from genetic_programming.util import print_gp_convergence
 
 import os
 
@@ -32,5 +36,7 @@ if __name__ == '__main__':
 
     for ind in hof:
         print(ind)
+
+    print_gp_convergence(logbook)
 
     clean_files()
