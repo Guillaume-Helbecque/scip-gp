@@ -1,3 +1,4 @@
+from instances.generate_instances import instance
 from itertools import product
 import random
 
@@ -9,11 +10,12 @@ def determine_training_set():
     (size, correlation, range of data, instance_id)
     """
     n = [50]
-    corr = [11]
-    range = [1000]
-    instance_ids = list(range(1, 101))
+    t = [11]
+    r = [1000]
+    i = list(range(1, 101))
 
-    training_instances = list(product(n, corr, range, instance_ids))
+    training_instances_params = list(product(n, t, r, i))
+    training_instances = [instance(*params) for params in training_instances_params]
 
     return training_instances
 
@@ -24,10 +26,11 @@ def determine_test_set():
     (size, correlation, range of data, instance_id)
     """
     n = [100]
-    corr = [11]
-    range = [1000]
-    instance_ids = list(range(1, 101))
+    t = [11]
+    r = [1000]
+    i = list(range(1, 101))
 
-    test_instances = list(product(n, corr, range, instance_ids))
+    test_instances_params = list(product(n, t, r, i))
+    test_instances = [instance(*params) for params in test_instances_params]
 
     return test_instances

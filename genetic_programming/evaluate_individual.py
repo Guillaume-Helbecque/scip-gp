@@ -17,8 +17,7 @@ def evaluate(individual, pset):
     output_filename += "_" + str(individual)
     # NOTE: the instance set could be given as an argument to evaluate
     instance_set = determine_training_set()
-    # TODO: implement a function that solves the given set of instances
-    solve_all_instances(args, param_dict, output_filename, func)
+    solve_all_instances(instance_set, args, param_dict, output_filename, func)
     mean_time, mean_gap, mean_nodes = extract_results(output_filename, args.check_output, False)
 
     if args.timelimit is not None:
