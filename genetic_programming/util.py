@@ -1,6 +1,23 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import pickle
 import math
+
+def save_logbook(logbook, filename="logbook.txt"):
+    """
+    Save a DEAP logbook to a text file using pickle serialization.
+    """
+    with open(filename, "wb") as f:
+        pickle.dump(logbook, f)
+
+def load_logbook(filename="logbook.txt"):
+    """
+    Load a DEAP logbook from a text file.
+    """
+    with open(filename, "rb") as f:
+        logbook = pickle.load(f)
+
+    return logbook
 
 def print_gp_convergence(logbook):
     """
