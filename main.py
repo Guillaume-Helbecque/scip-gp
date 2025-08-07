@@ -1,4 +1,4 @@
-from instances.generate_instances import compile_generator, clean_files
+from instances.generate_instances import compile_generator, clean_files, instance
 
 from scip_solver.solver import parse_args, solve_instance, solve_all_instances
 from scip_solver.util import extract_results
@@ -26,11 +26,13 @@ if __name__ == '__main__':
 
     if args.solve_all:
         # Solve all instances in series (`S` in total)
-        solve_all_instances(args, param_dict, output_filename)
+        insts = [instance(args.n, args.t, args.r, i) for i in range(1, args.s+1)]
+        solve_all_instances(insts, args, param_dict, output_filename)
         print("All instances completed successfully.")
     else:
         # Solve only the instance given by `-i`
-        solve_instance(args, args.i, param_dict, output_filename)
+        inst = instance(args.n, args.t, args.r, args.i)
+        solve_instance(inst, args, param_dict, output_filename)
         print("The instance completed successfully.")
     pop, logbook, hof = run_gp()
 
