@@ -7,6 +7,12 @@ from scip_solver.generate_model import create_model
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 import multiprocessing as mp
+import warnings
+
+def custom_warn_format(message, category, filename, lineno, line=None):
+    return f"{filename}:{lineno}: {category.__name__}: {message}\n"
+
+warnings.formatwarning = custom_warn_format
 
 # NOTE: the following function is only available on POSIX systems.
 mp.set_start_method("fork", force=True)
@@ -32,6 +38,10 @@ def parse_args():
 
     if args.timelimit is not None:
         param_dict.update({"limits/time": args.timelimit})
+
+    if args.check_output and (args.s != 100):
+        warnings.warn("--check-output is only valid when '-s' is set to 100; ignoring --check-output.")
+        args.check_output = False
 
     # if args.parmode: print(f"Number of CPU: {mp.cpu_count()}\n")
 

@@ -78,6 +78,6 @@ The available options are listed below.
 
 - **`--save-output`**: save output in a file
 
-- **`--check-output`**: check whether the SCIP solution matches the known optimal one, if one exists
+- **`--check-output`**: check whether the SCIP solution matches the known optimal one, if one exists (only valid with `-s 100`)
 
 - **`--solve-all`**: solve all instances in series (`-i` is ignored)
