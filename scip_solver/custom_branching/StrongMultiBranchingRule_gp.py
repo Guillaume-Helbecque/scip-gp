@@ -2,11 +2,16 @@ from pyscipopt import Branchrule, SCIP_RESULT, SCIP_LPSOLSTAT, quicksum
 from itertools import combinations
 import math
 
-class StrongMultiBranchingRule(Branchrule):
+NMAX = 5
 
-    def __init__(self, scip, n):
+class StrongMultiBranchingRule_gp(Branchrule):
+    """
+    TODO
+    """
+
+    def __init__(self, scip, f):
         self.scip = scip
-        self.n = n
+        self.f = f
 
     def multiBranchVarVal(self, branch_cands, sum):
         """
@@ -126,7 +131,10 @@ class StrongMultiBranchingRule(Branchrule):
         vars = self.scip.getVars()
         vals = [self.scip.getSolVal(None, var) for var in vars]
 
-        if ((npriocands == 1) and (self.n == 1)):
+        # Compute n dynamically using GP function
+        n = clamp_integer(int(self.f(self.scip.getDepth(), self.scip.getNVars())))
+
+        if ((npriocands == 1) and (n == 1)):
             self.scip.branchVarVal(branch_cands[0], branch_cand_sols[0])
             return {"result": SCIP_RESULT.BRANCHED}
 
@@ -136,7 +144,7 @@ class StrongMultiBranchingRule(Branchrule):
         best_bound_down = None
         best_bound_up = None
 
-        real_n = nvar if (nvar < self.n) else self.n
+        real_n = nvar if (nvar < n) else n
 
         cand_indices = list(range(nvar))
         # NOTE: we only need the combination with at least one fractional variable
@@ -171,5 +179,8 @@ class StrongMultiBranchingRule(Branchrule):
 
         return {"result": SCIP_RESULT.BRANCHED}
 
-if __name__ == "__main__":
-    print("hello, world")
+def clamp_integer(value, N=NMAX):
+    """
+    Clamps an integer value to the range [1, N].
+    """
+    return max(1, min(value, N))

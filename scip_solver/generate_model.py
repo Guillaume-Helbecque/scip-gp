@@ -22,11 +22,15 @@ def _extract_data(filename):
         p.append(profit)
         w.append(weight)
 
-    c = int(lines[n+1].strip())
+    # c = int(lines[n+1].strip())
+    c = lines[n+1].strip()
 
     return n, c, p, w
 
 def _sort_data(n, weights, profits):
+    """
+    TODO
+    """
     ratios = [profits[i] / weights[i] for i in range(n)]
 
     for i in range(n):

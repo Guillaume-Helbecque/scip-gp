@@ -1,6 +1,6 @@
-# Optimization Framework for Knapsack Problems Using Multi-Variable Branching and Reinforcement Learning
+# Optimization Framework for Knapsack Problems Using Multi-Variable Branching and Genetic Programming
 
-A Python-based framework leveraging SCIP for solving hard knapsack problem instances using a custom multi-variable branching strategies. The framework supports the integration of reinforcement learning techniques to guide the branching process. Parallel solving of multiple instances is supported for large-scale experimentation.
+A Python-based framework leveraging SCIP for solving hard knapsack problem instances using a custom multi-variable branching strategies. The framework supports the integration of genetic programming techniques to guide the branching process. Parallel solving of multiple instances is supported for large-scale experimentation.
 
 ### Prerequisites
 
@@ -59,12 +59,13 @@ The available options are listed below.
 #### Solver parameters:
 
 - **`--timelimit`**: time limit for SCIP solving (seconds)
-  - any positive integer (SCIP default is `1e+20`)
+  - any positive integer (`None` by default)
 
 - **`-b`**: branching rule index
   - `0`: SCIP default strong branching rule
   - `1`: custom strong branching rule
   - `2`: custom multi-variable strong branching rule
+  - `3`: custom multi-variable strong branching rule with GP function
 
 - **`--nv`**: size of branching set (only if `-b 2`)
   - any positive integer (`1` by default)
@@ -77,6 +78,6 @@ The available options are listed below.
 
 - **`--save-output`**: save output in a file
 
-- **`--check-output`**: check whether the SCIP solution matches the known optimal one, if one exists
+- **`--check-output`**: check whether the SCIP solution matches the known optimal one, if one exists (only valid with `-s 100`)
 
 - **`--solve-all`**: solve all instances in series (`-i` is ignored)

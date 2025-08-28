@@ -1,6 +1,14 @@
 import os
 import glob
 import subprocess
+from dataclasses import dataclass
+
+@dataclass
+class instance:
+    n: int
+    t: int
+    r: int
+    i: int
 
 def compile_generator():
     """
@@ -17,7 +25,7 @@ def compile_generator():
             cwd="instances"
         )
 
-def generate_instance(n, t, r, i, S=100):
+def generate_instance(inst, S=100):
     """
     Generate a knapsack problem instance file by invoking the compiled C generator.
 
@@ -33,7 +41,7 @@ def generate_instance(n, t, r, i, S=100):
     is returned by the generator's standard output.
     """
     result = subprocess.run(
-        ["./genhard.out", str(n), str(r), str(t), str(i), str(S)],
+        ["./genhard.out", str(inst.n), str(inst.r), str(inst.t), str(inst.i), str(S)],
         capture_output=True,
         text=True,
         cwd="instances"
