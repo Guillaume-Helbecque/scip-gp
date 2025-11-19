@@ -13,6 +13,9 @@
 from pyscipopt import Branchrule, SCIP_RESULT
 
 class StrongBranchingRule(Branchrule):
+    """
+    TODO
+    """
 
     def __init__(self, scip):
         self.scip = scip

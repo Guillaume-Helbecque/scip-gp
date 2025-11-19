@@ -1,2 +1,4 @@
 pyscipopt
 pandas
+deap
+matplotlib
