@@ -1,4 +1,4 @@
-# Optimization Framework for Knapsack Problems Using Multi-Variable Branching and Genetic Programming
+# A Genetic Programming Approach to Multi-Variable Branching for the Binary Knapsack Problem
 
 A Python-based framework leveraging SCIP for solving hard knapsack problem instances using a custom multi-variable branching strategies. The framework supports the integration of genetic programming techniques to guide the branching process. Parallel solving of multiple instances is supported for large-scale experimentation.
 
