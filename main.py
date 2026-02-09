@@ -6,6 +6,8 @@ from solvers.scip.util import extract_results
 from genetic_programming.gp_engine import run_gp
 from genetic_programming.util import print_gp_convergence, save_logbook, load_logbook
 
+from utils.argument_parser import parser
+
 import os
 
 try:
@@ -21,10 +23,12 @@ except NameError:
 os.chdir(work_dir)
 
 if __name__ == '__main__':
-    compile_generator()
-    args, param_dict, output_filename = parse_args()
+    args = parser.parse_args()
 
     if args.solver == 'scip':
+        compile_generator()
+        param_dict, output_filename = parse_args(args)
+
         if args.solve_all:
             # Solve all instances in series (`S` in total)
             insts = [instance(args.n, args.t, args.r, i) for i in range(1, args.s+1)]

@@ -2,7 +2,7 @@ from instances.generate_instances import generate_instance
 from solvers.scip.custom_branching.StrongBranchingRule import StrongBranchingRule
 from solvers.scip.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from solvers.scip.custom_branching.StrongMultiBranchingRule_gp import StrongMultiBranchingRule_gp
-from solvers.scip.util import parser, print_results, store_results, extract_results
+from solvers.scip.util import print_results, store_results, extract_results
 from solvers.scip.generate_model import create_model
 
 from pyscipopt import Model, SCIP_PARAMSETTING
@@ -25,12 +25,10 @@ allowed_braching_rules = [
     "customStrongMultiBranching_gp"
 ]
 
-def parse_args():
+def parse_args(args):
     """
     TODO
     """
-    args = parser.parse_args()
-
     param_dict = {
         "nodeselection/dfs/stdpriority": 1073741823,
         "misc/usesymmetry": 5,
@@ -52,7 +50,7 @@ def parse_args():
     else:
         output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}.txt"
 
-    return args, param_dict, output_filename
+    return param_dict, output_filename
 
 def setBranchingRule(scip, branch_id, num_vars, function):
     """

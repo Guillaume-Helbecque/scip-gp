@@ -3,6 +3,8 @@ from solvers.scip.util import extract_results
 
 from instances.instance_sets import determine_training_set
 
+from utils.argument_parser import parser
+
 from deap import gp
 
 def evaluate(individual, pset):
@@ -11,7 +13,8 @@ def evaluate(individual, pset):
     """
     print(individual)
     func = gp.compile(individual, pset)
-    args, param_dict, output_filename = parse_args()
+    args = parser.parse_args()
+    param_dict, output_filename = parse_args(args)
     args.no_output=True
     args.save_output=True
     output_filename += "_" + str(individual)
