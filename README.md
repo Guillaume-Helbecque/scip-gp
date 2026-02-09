@@ -22,7 +22,7 @@ pip install -r requirements.txt
 Run the main solver script with options to generate and solve instances:
 
 ```bash
-python main.py [options]
+python3 main.py [options]
 ```
 
 The available options are listed below.
@@ -57,6 +57,9 @@ The available options are listed below.
   - any positive integer (`1` by default)
 
 #### Solver parameters:
+
+- **`--solver`**: B&B solver
+  - `scip` (default)
 
 - **`--timelimit`**: time limit for SCIP solving (seconds)
   - any positive integer (`None` by default)

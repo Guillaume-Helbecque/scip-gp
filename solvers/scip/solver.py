@@ -1,9 +1,9 @@
 from instances.generate_instances import generate_instance
-from scip_solver.custom_branching.StrongBranchingRule import StrongBranchingRule
-from scip_solver.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
-from scip_solver.custom_branching.StrongMultiBranchingRule_gp import StrongMultiBranchingRule_gp
-from scip_solver.util import parser, print_results, store_results, extract_results
-from scip_solver.generate_model import create_model
+from solvers.scip.custom_branching.StrongBranchingRule import StrongBranchingRule
+from solvers.scip.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
+from solvers.scip.custom_branching.StrongMultiBranchingRule_gp import StrongMultiBranchingRule_gp
+from solvers.scip.util import parser, print_results, store_results, extract_results
+from solvers.scip.generate_model import create_model
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 import multiprocessing as mp

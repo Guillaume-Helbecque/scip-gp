@@ -1,5 +1,5 @@
-from scip_solver.solver import parse_args, solve_all_instances
-from scip_solver.util import extract_results
+from solvers.scip.solver import parse_args, solve_all_instances
+from solvers.scip.util import extract_results
 
 from instances.instance_sets import determine_training_set
 
