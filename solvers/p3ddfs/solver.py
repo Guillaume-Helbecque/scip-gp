@@ -1,0 +1,43 @@
+import multiprocessing as mp
+import subprocess
+
+def p3ddfs_solve_instance(inst, args, output_filename, individual = ""):
+    """
+    TODO
+    """
+    result = subprocess.run(
+        [
+            "./main_knapsack.out",
+            "--mode", "sequential",
+            "--ub", "dantzig_mvar",
+            "--lb", "inf",
+            "--mvar", str(args.nv),
+            "--ind", individual,
+            "--n", str(inst.n),
+            "--r", str(inst.r),
+            "--t", str(inst.t),
+            "--id", str(inst.i)
+        ],
+        capture_output=True,
+        text=True,
+        cwd="solvers/p3ddfs/"
+    )
+
+    if not args.no_output:
+        print(result.stdout)
+
+def p3ddfs_solve_all_instances(insts, args, output_filename, individual = ""):
+    """
+    TODO
+    """
+    if args.parmode:
+        # not sure if needed
+        global global_ind
+        global_ind = individual
+
+        args_list = [(inst, args, output_filename) for inst in insts]
+        with mp.Pool(processes=mp.cpu_count()) as pool:
+            pool.starmap(p3ddfs_solve_instance, args_list)
+    else:
+        for inst in insts:
+            p3ddfs_solve_instance(inst, args, output_filename, individual)

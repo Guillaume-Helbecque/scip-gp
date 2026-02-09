@@ -59,7 +59,8 @@ The available options are listed below.
 #### Solver parameters:
 
 - **`--solver`**: B&B solver
-  - `scip` (default)
+  - `scip` Python-based framework (default)
+  - `p3d-dfs` Chapel-based framework
 
 - **`--timelimit`**: time limit for SCIP solving (seconds)
   - any positive integer (`None` by default)

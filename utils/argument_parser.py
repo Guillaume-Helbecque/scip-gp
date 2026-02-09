@@ -12,7 +12,8 @@ parser.add_argument('-s', type=int, default=100,
 parser.add_argument('-i', type=int, default=1, help='instance index')
 
 # Solver
-parser.add_argument('--solver', type=str, default='scip', choices = ['scip'], help='B&B solver')
+parser.add_argument('--solver', type=str, default='scip',
+    choices = ['scip', 'p3d-dfs'], help='B&B solver')
 parser.add_argument('--timelimit', type=int,
     help='time limit for solver (seconds)')
 parser.add_argument('-b', type=int, default=1, choices = [0,1,2,3],

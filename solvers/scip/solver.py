@@ -119,7 +119,7 @@ def scip_solve_all_instances(insts, args, param_dict, output_filename, function 
 
         args_list = [(inst, args, param_dict, output_filename) for inst in insts]
         with mp.Pool(processes=mp.cpu_count()) as pool:
-            pool.starmap(solve_instance, args_list)
+            pool.starmap(scip_solve_instance, args_list)
     else:
         for inst in insts:
-            solve_instance(inst, args, param_dict, output_filename, function)
+            scip_solve_instance(inst, args, param_dict, output_filename, function)

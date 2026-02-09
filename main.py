@@ -3,6 +3,8 @@ from instances.generate_instances import compile_generator, clean_files, instanc
 from solvers.scip.solver import scip_parse_args, scip_solve_instance, scip_solve_all_instances
 from solvers.scip.util import extract_results
 
+from solvers.p3ddfs.solver import p3ddfs_solve_instance, p3ddfs_solve_all_instances
+
 from genetic_programming.gp_engine import run_gp
 from genetic_programming.util import print_gp_convergence, save_logbook, load_logbook
 
@@ -38,6 +40,18 @@ if __name__ == '__main__':
             # Solve only the instance given by `-i`
             inst = instance(args.n, args.t, args.r, args.i)
             scip_solve_instance(inst, args, param_dict, output_filename)
+            print("The instance completed successfully.")
+
+    elif args.solver == 'p3d-dfs':
+        if args.solve_all:
+            # Solve all instances in series (`S` in total)
+            insts = [instance(args.n, args.t, args.r, i) for i in range(1, args.s+1)]
+            p3ddfs_solve_all_instances(insts, args, "output_filename")
+            print("All instances completed successfully.")
+        else:
+            # Solve only the instance given by `-i`
+            inst = instance(args.n, args.t, args.r, args.i)
+            p3ddfs_solve_instance(inst, args, "output_filename")
             print("The instance completed successfully.")
 
     # pop, logbook, hof = run_gp()
