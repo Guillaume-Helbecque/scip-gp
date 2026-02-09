@@ -25,7 +25,7 @@ allowed_braching_rules = [
     "customStrongMultiBranching_gp"
 ]
 
-def parse_args(args):
+def scip_parse_args(args):
     """
     TODO
     """
@@ -80,7 +80,7 @@ def setBranchingRule(scip, branch_id, num_vars, function):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
 
-def solve_instance(inst, args, param_dict, output_filename, function = lambda x,y: 1):
+def scip_solve_instance(inst, args, param_dict, output_filename, function = lambda x,y: 1):
     """
     Solve a single optimization instance using SCIP.
 
@@ -109,7 +109,7 @@ def solve_instance(inst, args, param_dict, output_filename, function = lambda x,
     if args.save_output:
         store_results(instancename, scip, output_filename, args.check_output)
 
-def solve_all_instances(insts, args, param_dict, output_filename, function = lambda x,y: 1):
+def scip_solve_all_instances(insts, args, param_dict, output_filename, function = lambda x,y: 1):
     """
     TODO
     """

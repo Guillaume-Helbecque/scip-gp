@@ -1,6 +1,6 @@
 from instances.generate_instances import compile_generator, clean_files, instance
 
-from solvers.scip.solver import parse_args, solve_instance, solve_all_instances
+from solvers.scip.solver import scip_parse_args, scip_solve_instance, scip_solve_all_instances
 from solvers.scip.util import extract_results
 
 from genetic_programming.gp_engine import run_gp
@@ -27,17 +27,17 @@ if __name__ == '__main__':
 
     if args.solver == 'scip':
         compile_generator()
-        param_dict, output_filename = parse_args(args)
+        param_dict, output_filename = scip_parse_args(args)
 
         if args.solve_all:
             # Solve all instances in series (`S` in total)
             insts = [instance(args.n, args.t, args.r, i) for i in range(1, args.s+1)]
-            solve_all_instances(insts, args, param_dict, output_filename)
+            scip_solve_all_instances(insts, args, param_dict, output_filename)
             print("All instances completed successfully.")
         else:
             # Solve only the instance given by `-i`
             inst = instance(args.n, args.t, args.r, args.i)
-            solve_instance(inst, args, param_dict, output_filename)
+            scip_solve_instance(inst, args, param_dict, output_filename)
             print("The instance completed successfully.")
 
     # pop, logbook, hof = run_gp()

@@ -14,7 +14,7 @@ parser.add_argument('-i', type=int, default=1, help='instance index')
 # Solver
 parser.add_argument('--solver', type=str, default='scip', choices = ['scip'], help='B&B solver')
 parser.add_argument('--timelimit', type=int,
-    help='time limit for SCIP solving (seconds)')
+    help='time limit for solver (seconds)')
 parser.add_argument('-b', type=int, default=1, choices = [0,1,2,3],
     help='branching rule index')
 parser.add_argument('--nv', type=int, default=1, help='size of branching set')
@@ -27,4 +27,4 @@ parser.add_argument('--save-output', action='store_true',
 parser.add_argument('--solve-all', action='store_true',
     help='solve all instances in series')
 parser.add_argument('--check-output', action='store_true',
-    help='Check whether the SCIP solution matches the known optimal one, if one exists')
+    help='Check whether the best solution found matches the known optimal one, if one exists')

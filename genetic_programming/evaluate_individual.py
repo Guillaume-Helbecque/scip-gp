@@ -1,4 +1,4 @@
-from solvers.scip.solver import parse_args, solve_all_instances
+from solvers.scip.solver import scip_parse_args, scip_solve_all_instances
 from solvers.scip.util import extract_results
 
 from instances.instance_sets import determine_training_set
@@ -14,7 +14,7 @@ def evaluate(individual, pset):
     print(individual)
     func = gp.compile(individual, pset)
     args = parser.parse_args()
-    param_dict, output_filename = parse_args(args)
+    param_dict, output_filename = scip_parse_args(args)
     args.no_output=True
     args.save_output=True
     output_filename += "_" + str(individual)
