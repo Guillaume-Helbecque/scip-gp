@@ -1,30 +1,6 @@
 import os
 import pandas as pd
 
-def print_results(instancename, model, check):
-    """
-    Print summary results from a SCIP model optimization to standard output.
-    """
-    instancename = os.path.splitext(instancename)[0]
-
-    print("Instance          :", instancename)
-    print("SCIP Status       :", model.getStatus())
-    print("Solving Time (sec):", model.getSolvingTime())
-    print("Gap               :", model.getGap())
-    print("Solving Nodes     :", model.getNNodes())
-    if model.getNSolsFound() > 0:
-        print("Objective value   :", model.getObjVal())
-        print("Solutions found   :", model.getNSolsFound())
-    if check:
-        c = _check_results(instancename, model)
-        if model.getStatus() == "optimal":
-            if c: print("Check             : Success")
-            elif (c == False): print("Check             : Fail")
-            else: print("Check             : None")
-        else:
-            print("Check             : None")
-    print("")
-
 def store_results(instancename, model, filename, check):
     """
     Append optimization results from a SCIP model to an output file.

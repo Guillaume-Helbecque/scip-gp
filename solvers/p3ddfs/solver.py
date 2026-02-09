@@ -1,11 +1,13 @@
 import multiprocessing as mp
 import subprocess
 
+from solvers.commons.postprocessing import print_results
+
 def p3ddfs_solve_instance(inst, args, output_filename, individual = ""):
     """
     TODO
     """
-    result = subprocess.run(
+    results = subprocess.run(
         [
             "./main_knapsack.out",
             "--mode", "sequential",
@@ -24,17 +26,14 @@ def p3ddfs_solve_instance(inst, args, output_filename, individual = ""):
     )
 
     if not args.no_output:
-        print(result.stdout)
+        # FIXME: how to get instance name?
+        print_results('p3ddfs', "instancename", results.stdout, args.check_output)
 
 def p3ddfs_solve_all_instances(insts, args, output_filename, individual = ""):
     """
     TODO
     """
     if args.parmode:
-        # not sure if needed
-        global global_ind
-        global_ind = individual
-
         args_list = [(inst, args, output_filename) for inst in insts]
         with mp.Pool(processes=mp.cpu_count()) as pool:
             pool.starmap(p3ddfs_solve_instance, args_list)

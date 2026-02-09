@@ -2,8 +2,10 @@ from instances.generate_instances import generate_instance
 from solvers.scip.custom_branching.StrongBranchingRule import StrongBranchingRule
 from solvers.scip.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from solvers.scip.custom_branching.StrongMultiBranchingRule_gp import StrongMultiBranchingRule_gp
-from solvers.scip.util import print_results, store_results, extract_results
+from solvers.scip.util import store_results, extract_results
 from solvers.scip.generate_model import create_model
+
+from solvers.commons.postprocessing import print_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 import multiprocessing as mp
@@ -105,7 +107,7 @@ def scip_solve_instance(inst, args, param_dict, output_filename, function = lamb
     scip.optimize()
 
     if not args.no_output:
-        print_results(instancename, scip, args.check_output)
+        print_results('scip', instancename, scip, args.check_output)
     if args.save_output:
         store_results(instancename, scip, output_filename, args.check_output)
 
