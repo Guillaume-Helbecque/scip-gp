@@ -5,6 +5,9 @@ from solvers.scip.custom_branching.StrongMultiBranchingRule_gp import StrongMult
 from solvers.scip.generate_model import create_model
 
 from solvers.commons.postprocessing import print_results, store_results, extract_results
+from solvers.commons.abstract_class import Solver
+
+from instances.generate_instances import compile_generator
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 import multiprocessing as mp
@@ -25,6 +28,56 @@ allowed_braching_rules = [
     "customStrongMultiBranching",
     "customStrongMultiBranching_gp"
 ]
+
+class SCIP_solver(Solver):
+    def __init__(self, args):
+        compile_generator()
+        self.param_dict, self.output_filename = scip_parse_args(args)
+
+    def solve(self, inst, args, function = lambda x,y: 1):
+        """
+        Solve a single optimization instance using SCIP.
+
+        This function generates an instance based on given parameters,
+        creates the corresponding SCIP model, applies configuration parameters,
+        and runs the optimization.
+
+        Optionally prints and/or saves results according to the user arguments.
+        """
+        if args.parmode:
+            global global_func
+            function = global_func
+
+        instancename = inst.get_name()
+        generate_instance(inst, args.s)
+        scip = create_model(instancename)
+        scip.setParams(self.param_dict)
+        scip.setHeuristics(SCIP_PARAMSETTING.OFF)
+        scip.setPresolve(SCIP_PARAMSETTING.OFF)
+        scip.setSeparating(SCIP_PARAMSETTING.OFF)
+        scip.hideOutput()
+        setBranchingRule(scip, args.b, args.nv, function)
+        scip.optimize()
+
+        if not args.no_output:
+            print_results('scip', instancename, scip, args.check_output)
+        if args.save_output:
+            store_results('scip', instancename, scip, self.output_filename, args.check_output)
+
+    def solve_all(self, insts, args, function = lambda x,y: 1):
+        """
+        TODO
+        """
+        if args.parmode:
+            global global_func
+            global_func = function
+
+            args_list = [(inst, args, self.param_dict, self.output_filename) for inst in insts]
+            with mp.Pool(processes=mp.cpu_count()) as pool:
+                pool.starmap(self.solve, args_list)
+        else:
+            for inst in insts:
+                self.solve(inst, args, self.param_dict, self.output_filename, function)
 
 def scip_parse_args(args):
     """
@@ -80,48 +133,3 @@ def setBranchingRule(scip, branch_id, num_vars, function):
             custom_branch_rule = StrongMultiBranchingRule_gp(scip, function)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
-
-def scip_solve_instance(inst, args, param_dict, output_filename, function = lambda x,y: 1):
-    """
-    Solve a single optimization instance using SCIP.
-
-    This function generates an instance based on given parameters,
-    creates the corresponding SCIP model, applies configuration parameters,
-    and runs the optimization.
-
-    Optionally prints and/or saves results according to the user arguments.
-    """
-    if args.parmode:
-        global global_func
-        function = global_func
-
-    instancename = inst.get_name()
-    generate_instance(inst, args.s)
-    scip = create_model(instancename)
-    scip.setParams(param_dict)
-    scip.setHeuristics(SCIP_PARAMSETTING.OFF)
-    scip.setPresolve(SCIP_PARAMSETTING.OFF)
-    scip.setSeparating(SCIP_PARAMSETTING.OFF)
-    scip.hideOutput()
-    setBranchingRule(scip, args.b, args.nv, function)
-    scip.optimize()
-
-    if not args.no_output:
-        print_results('scip', instancename, scip, args.check_output)
-    if args.save_output:
-        store_results('scip', instancename, scip, output_filename, args.check_output)
-
-def scip_solve_all_instances(insts, args, param_dict, output_filename, function = lambda x,y: 1):
-    """
-    TODO
-    """
-    if args.parmode:
-        global global_func
-        global_func = function
-
-        args_list = [(inst, args, param_dict, output_filename) for inst in insts]
-        with mp.Pool(processes=mp.cpu_count()) as pool:
-            pool.starmap(scip_solve_instance, args_list)
-    else:
-        for inst in insts:
-            scip_solve_instance(inst, args, param_dict, output_filename, function)
