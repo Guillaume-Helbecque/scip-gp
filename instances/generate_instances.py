@@ -10,6 +10,9 @@ class instance:
     r: int
     i: int
 
+    def get_name(self):
+        return f"knapPI_{self.t}_{self.n}_{self.r}_{self.i}.txt"
+
 def compile_generator():
     """
     Compile the C program 'genhard.c' into an executable 'genhard.out' inside the
@@ -37,16 +40,12 @@ def generate_instance(inst, S=100):
         - S: Total number of instances in the series (default is 100).
 
     The generator writes the instance to a file named according to the pattern
-    "knapPI_<t>_<n>_<r>_<i>.txt" inside the 'instances' folder. The exact filename
-    is returned by the generator's standard output.
+    "knapPI_<t>_<n>_<r>_<i>.txt" inside the 'instances' folder.
     """
-    result = subprocess.run(
+    subprocess.run(
         ["./genhard.out", str(inst.n), str(inst.r), str(inst.t), str(inst.i), str(S)],
-        capture_output=True,
-        text=True,
         cwd="instances"
     )
-    return result.stdout.strip()
 
 def clean_files():
     """

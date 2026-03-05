@@ -96,7 +96,8 @@ def scip_solve_instance(inst, args, param_dict, output_filename, function = lamb
         global global_func
         function = global_func
 
-    instancename = generate_instance(inst, args.s)
+    instancename = inst.get_name()
+    generate_instance(inst, args.s)
     scip = create_model(instancename)
     scip.setParams(param_dict)
     scip.setHeuristics(SCIP_PARAMSETTING.OFF)

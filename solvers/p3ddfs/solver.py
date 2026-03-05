@@ -25,9 +25,10 @@ def p3ddfs_solve_instance(inst, args, output_filename, individual = ""):
         cwd="solvers/p3ddfs/"
     )
 
+    instancename = inst.get_name()
+
     if not args.no_output:
-        # FIXME: how to get instance name?
-        print_results('p3ddfs', "instancename", results.stdout, args.check_output)
+        print_results('p3ddfs', instancename, results.stdout, args.check_output)
 
 def p3ddfs_solve_all_instances(insts, args, output_filename, individual = ""):
     """

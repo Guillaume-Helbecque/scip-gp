@@ -43,12 +43,13 @@ def get_optimality_gap(solver, results):
 
 def print_results(solver, instancename, results, check):
     """
-    Print summary results from a SCIP model optimization to standard output.
+    Print summary results from a B&B model optimization to standard output.
     """
     instancename = os.path.splitext(instancename)[0]
 
     print("Instance          :", instancename)
-    print("SCIP Status       :", get_status(solver, results))
+    print("B&B Solver        :", solver)
+    print("B&B Status        :", get_status(solver, results))
     print("Solving Time (sec):", get_solving_time(solver, results))
     print("Gap               :", get_optimality_gap(solver, results))
     print("Solving Nodes     :", get_number_nodes(solver, results))

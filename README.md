@@ -62,7 +62,7 @@ The available options are listed below.
   - `scip` Python-based framework (default)
   - `p3d-dfs` Chapel-based framework
 
-- **`--timelimit`**: time limit for SCIP solving (seconds)
+- **`--timelimit`**: time limit for solver (seconds)
   - any positive integer (`None` by default)
 
 - **`-b`**: branching rule index
@@ -82,6 +82,6 @@ The available options are listed below.
 
 - **`--save-output`**: save output in a file
 
-- **`--check-output`**: check whether the SCIP solution matches the known optimal one, if one exists (only valid with `-s 100`)
+- **`--check-output`**: check whether the best solution found matches the known optimal one, if one exists (only valid with `-s 100`)
 
 - **`--solve-all`**: solve all instances in series (`-i` is ignored)
