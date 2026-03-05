@@ -2,10 +2,9 @@ from instances.generate_instances import generate_instance
 from solvers.scip.custom_branching.StrongBranchingRule import StrongBranchingRule
 from solvers.scip.custom_branching.StrongMultiBranchingRule import StrongMultiBranchingRule
 from solvers.scip.custom_branching.StrongMultiBranchingRule_gp import StrongMultiBranchingRule_gp
-from solvers.scip.util import store_results, extract_results
 from solvers.scip.generate_model import create_model
 
-from solvers.commons.postprocessing import print_results
+from solvers.commons.postprocessing import print_results, store_results, extract_results
 
 from pyscipopt import Model, SCIP_PARAMSETTING
 import multiprocessing as mp
@@ -48,9 +47,9 @@ def scip_parse_args(args):
     branch_rule = allowed_braching_rules[args.b]
 
     if branch_rule == "customStrongMultiBranching":
-        output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}_{args.nv}.txt"
+        output_filename = f"scip_knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}_{args.nv}.txt"
     else:
-        output_filename = f"knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}.txt"
+        output_filename = f"scip_knapPI_{args.t}_{args.n}_{args.r}_{branch_rule}.txt"
 
     return param_dict, output_filename
 
@@ -110,7 +109,7 @@ def scip_solve_instance(inst, args, param_dict, output_filename, function = lamb
     if not args.no_output:
         print_results('scip', instancename, scip, args.check_output)
     if args.save_output:
-        store_results(instancename, scip, output_filename, args.check_output)
+        store_results('scip', instancename, scip, output_filename, args.check_output)
 
 def scip_solve_all_instances(insts, args, param_dict, output_filename, function = lambda x,y: 1):
     """

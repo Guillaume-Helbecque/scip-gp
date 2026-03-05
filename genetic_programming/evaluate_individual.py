@@ -1,5 +1,5 @@
+from solvers.commons.postprocessing import extract_results
 from solvers.scip.solver import scip_parse_args, scip_solve_all_instances
-from solvers.scip.util import extract_results
 
 from instances.instance_sets import determine_training_set
 
