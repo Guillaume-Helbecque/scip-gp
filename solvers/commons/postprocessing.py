@@ -198,7 +198,8 @@ def extract_results(filename, check, show_output=True):
 
 def _check_results(instancename, results):
     """
-    TODO
+    Check whether the solution found for a given instance matches the known
+    optimal value.
     """
     path = os.path.join("instances", "knapPI_optimal.txt")
 

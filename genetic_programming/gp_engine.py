@@ -6,7 +6,13 @@ from deap import base, creator, gp, tools, algorithms
 
 def run_gp(initial_pop=50, mate=0.9, mutate=0.1, nb_gen=20):
     """
-    TODO
+    Runs a GP evolutionary algorithm to optimize a function over instances.
+
+    Parameters are:
+    - initial_pop: number of individuals in the initial population
+    - mate: crossover probability for mating two individuals
+    - mutate: mutation probability for modifying an individual
+    - nb_gen: number of generations to run the evolutionary algorithm
     """
     # Create fitness and individual
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))

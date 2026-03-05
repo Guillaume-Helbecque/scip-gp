@@ -5,9 +5,9 @@ class Solver(ABC):
         pass
 
     @abstractmethod
-    def solve(self, inst, args, output_filename):
+    def solve(self, inst, args, individual):
         pass
 
     @abstractmethod
-    def solve_all(self, insts, args, output_filename):
+    def solve_all(self, insts, args, individual):
         pass

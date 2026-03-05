@@ -34,19 +34,19 @@ class SCIP_solver(Solver):
         compile_generator()
         self.param_dict, self.output_filename = scip_parse_args(args)
 
-    def solve(self, inst, args, function = lambda x,y: 1):
+    def solve(self, inst, args, individual = lambda x,y: 1):
         """
-        Solve a single optimization instance using SCIP.
+        Solve a single optimization instance using SCIP solver.
 
-        This function generates an instance based on given parameters,
+        This method generates an instance based on given parameters,
         creates the corresponding SCIP model, applies configuration parameters,
         and runs the optimization.
 
         Optionally prints and/or saves results according to the user arguments.
         """
         if args.parmode:
-            global global_func
-            function = global_func
+            global global_individual
+            individual = global_individual
 
         instancename = inst.get_name()
         generate_instance(inst, args.s)
@@ -56,7 +56,7 @@ class SCIP_solver(Solver):
         scip.setPresolve(SCIP_PARAMSETTING.OFF)
         scip.setSeparating(SCIP_PARAMSETTING.OFF)
         scip.hideOutput()
-        setBranchingRule(scip, args.b, args.nv, function)
+        setBranchingRule(scip, args.b, args.nv, individual)
         scip.optimize()
 
         if not args.no_output:
@@ -64,24 +64,26 @@ class SCIP_solver(Solver):
         if args.save_output:
             store_results('scip', instancename, scip, self.output_filename, args.check_output)
 
-    def solve_all(self, insts, args, function = lambda x,y: 1):
+    def solve_all(self, insts, args, individual = lambda x,y: 1):
         """
-        TODO
+        Solve a series of optimization instances using SCIP solver.
+
+        This method relies on the 'solve' method, and allows parallel solving.
         """
         if args.parmode:
-            global global_func
-            global_func = function
+            global global_individual
+            global_individual = individual
 
             args_list = [(inst, args, self.param_dict, self.output_filename) for inst in insts]
             with mp.Pool(processes=mp.cpu_count()) as pool:
                 pool.starmap(self.solve, args_list)
         else:
             for inst in insts:
-                self.solve(inst, args, self.param_dict, self.output_filename, function)
+                self.solve(inst, args, self.param_dict, self.output_filename, individual)
 
 def scip_parse_args(args):
     """
-    TODO
+    Parse user arguments to generate SCIP parameters and outputs.
     """
     param_dict = {
         "nodeselection/dfs/stdpriority": 1073741823,
@@ -106,7 +108,7 @@ def scip_parse_args(args):
 
     return param_dict, output_filename
 
-def setBranchingRule(scip, branch_id, num_vars, function):
+def setBranchingRule(scip, branch_id, num_vars, individual):
     """
     Configure and set the SCIP branching rule.
 
@@ -130,6 +132,6 @@ def setBranchingRule(scip, branch_id, num_vars, function):
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)
         case "customStrongMultiBranching_gp":
-            custom_branch_rule = StrongMultiBranchingRule_gp(scip, function)
+            custom_branch_rule = StrongMultiBranchingRule_gp(scip, individual)
             scip.includeBranchrule(custom_branch_rule, "", "",
                 priority=536870911, maxdepth=-1, maxbounddist=1)

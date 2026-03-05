@@ -15,7 +15,12 @@ class P3DDFS_solver(Solver):
 
     def solve(self, inst, args, individual = ""):
         """
-        TODO
+        Solve a single optimization instance using P3D-DFS solver.
+
+        The generation of the instance to solve is managed by the solver itself.
+        Other parameters allow to configure the solver.
+
+        Optionally prints and/or saves results according to the user arguments.
         """
         results = subprocess.run(
             [
@@ -44,7 +49,9 @@ class P3DDFS_solver(Solver):
 
     def solve_all(self, insts, args, individual = ""):
         """
-        TODO
+        Solve a series of optimization instances using P3D-DFS solver.
+
+        This method relies on the 'solve' method, and allows parallel solving.
         """
         if args.parmode:
             args_list = [(inst, args, self.output_filename) for inst in insts]
@@ -56,7 +63,7 @@ class P3DDFS_solver(Solver):
 
 def p3ddfs_parse_args(args):
     """
-    TODO
+    Parse user arguments to generate P3D-DFS parameters and outputs.
     """
     if args.timelimit is not None:
         # NOTE: timelimit not yet implemented in P3D-DFS solver
