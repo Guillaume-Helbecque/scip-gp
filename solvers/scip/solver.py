@@ -74,12 +74,12 @@ class SCIP_solver(Solver):
             global global_individual
             global_individual = individual
 
-            args_list = [(inst, args, self.param_dict, self.output_filename) for inst in insts]
+            args_list = [(inst, args) for inst in insts]
             with mp.Pool(processes=mp.cpu_count()) as pool:
                 pool.starmap(self.solve, args_list)
         else:
             for inst in insts:
-                self.solve(inst, args, self.param_dict, self.output_filename, individual)
+                self.solve(inst, args, individual)
 
 def scip_parse_args(args):
     """

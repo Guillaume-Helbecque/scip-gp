@@ -34,7 +34,11 @@ def get_status(solver, results):
     if solver == 'scip':
         return results.getStatus()
     elif solver == 'p3ddfs':
-        return "not yet implemented"
+        # NOTE: workaround since no status in P3D-DFS yet
+        if get_number_solutions(solver, results):
+            return 'optimal'
+        else:
+            return 'timelimit'
 
 def get_optimality_gap(solver, results):
     if solver == 'scip':
@@ -54,19 +58,19 @@ def print_results(solver, instancename, results, check):
     print("Solving Time (sec):", get_solving_time(solver, results))
     print("Gap               :", get_optimality_gap(solver, results))
     print("Solving Nodes     :", get_number_nodes(solver, results))
+
     if get_number_solutions(solver, results):
         print("Objective value   :", get_optimal_found(solver, results))
         print("Solutions found   :", get_number_solutions(solver, results))
-    # if check:
-    #     # NOTE: 'check' disabled for now
-    #     c = _check_results(instancename, model)
-    #     if get_status(solver, results) == "optimal":
-    #         if c: print("Check             : Success")
-    #         elif (c == False): print("Check             : Fail")
-    #         else: print("Check             : None")
-    #     else:
-    #         print("Check             : None")
-    print("")
+
+    if check:
+        c = _check_results(instancename, solver, results)
+        if get_status(solver, results) == "optimal":
+            if c: print("Check             : Success")
+            elif (c == False): print("Check             : Fail")
+            else: print("Check             : None")
+        else:
+            print("Check             : None")
 
 def store_results(solver, instancename, results, filename, check):
     """
@@ -91,7 +95,7 @@ def store_results(solver, instancename, results, filename, check):
     )
 
     if check:
-        c = _check_results(instancename, results)
+        c = _check_results(instancename, solver, results)
         # NOTE: Nested f-strings allowed from Python 3.12+
         # header += f"{f'{'Check':<7}':>9}"
         formatted = f"{'Check':<7}"
@@ -196,7 +200,7 @@ def extract_results(filename, check, show_output=True):
 
     return mean_time, mean_gap, mean_nodes
 
-def _check_results(instancename, results):
+def _check_results(instancename, solver, results):
     """
     Check whether the solution found for a given instance matches the known
     optimal value.

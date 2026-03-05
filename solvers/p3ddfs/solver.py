@@ -54,12 +54,12 @@ class P3DDFS_solver(Solver):
         This method relies on the 'solve' method, and allows parallel solving.
         """
         if args.parmode:
-            args_list = [(inst, args, self.output_filename) for inst in insts]
+            args_list = [(inst, args) for inst in insts]
             with mp.Pool(processes=mp.cpu_count()) as pool:
                 pool.starmap(self.solve, args_list)
         else:
             for inst in insts:
-                self.solve(inst, args, self.output_filename, individual)
+                self.solve(inst, args, individual)
 
 def p3ddfs_parse_args(args):
     """
