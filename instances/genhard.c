@@ -249,8 +249,6 @@ void showitems(int type, int n, int r, int id, int *pp, int *ww, long long c)
   }
   fprintf(out,"%lld\n", c);
   fclose(out);
-
-  printf("%s\n", filename);
 }
 
 

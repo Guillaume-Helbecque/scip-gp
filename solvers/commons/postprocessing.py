@@ -1,66 +1,80 @@
+import re
 import os
-import argparse
 import pandas as pd
 
-## Arguments parser
+def get_solving_time(solver, results):
+    if solver == 'scip':
+        return results.getSolvingTime()
+    elif solver == 'p3ddfs':
+        m = re.search(r"Elapsed time:\s*([0-9.]+)\s*\[s\]", results)
+        return float(m.group(1))
 
-parser = argparse.ArgumentParser(prog='main.py')
+def get_number_nodes(solver, results):
+    if solver == 'scip':
+        return results.getNNodes()
+    elif solver == 'p3ddfs':
+        m = re.search(r"Size of the explored tree:\s*([0-9]+)", results)
+        return int(m.group(1))
 
-# Instance
-parser.add_argument('-n', type=int, default=100, help='number of items')
-parser.add_argument('-t', type=int, default=11,
-    choices = [1,2,3,4,5,6,7,8,9,11,12,13,14,15,16], help='instance type')
-parser.add_argument('-r', type=int, default=1000, help='range of coefficients')
-parser.add_argument('-s', type=int, default=100,
-    help='number of instances in series')
-parser.add_argument('-i', type=int, default=1, help='instance index')
+def get_optimal_found(solver, results):
+    if solver == 'scip':
+        return results.getObjVal()
+    elif solver == 'p3ddfs':
+        m = re.search(r"Optimum found:\s*([0-9]+(?:\.[0-9]+)?)", results)
+        return float(m.group(1))
 
-# Solver
-parser.add_argument('--timelimit', type=int,
-    help='time limit for SCIP solving (seconds)')
-parser.add_argument('-b', type=int, default=1, choices = [0,1,2,3],
-    help='branching rule index')
-parser.add_argument('--nv', type=int, default=1, help='size of branching set')
-parser.add_argument('--parmode', action='store_true', help='Enable parallel mode (only if --solve-all)')
+def get_number_solutions(solver, results):
+    if solver == 'scip':
+        return results.getNSolsFound()
+    elif solver == 'p3ddfs':
+        m = re.search(r"Number of optimal solutions:\s*([0-9]+)", results)
+        return int(m.group(1))
 
-# Outputs
-parser.add_argument('--no-output', action='store_true', help='Disable output')
-parser.add_argument('--save-output', action='store_true',
-    help='save output in a file')
-parser.add_argument('--solve-all', action='store_true',
-    help='solve all instances in series')
-parser.add_argument('--check-output', action='store_true',
-    help='Check whether the SCIP solution matches the known optimal one, if one exists')
+def get_status(solver, results):
+    if solver == 'scip':
+        return results.getStatus()
+    elif solver == 'p3ddfs':
+        # NOTE: workaround since no status in P3D-DFS yet
+        if get_number_solutions(solver, results):
+            return 'optimal'
+        else:
+            return 'timelimit'
 
-## Misc
+def get_optimality_gap(solver, results):
+    if solver == 'scip':
+        return results.getGap()
+    elif solver == 'p3ddfs':
+        return "not yet implemented"
 
-def print_results(instancename, model, check):
+def print_results(solver, instancename, results, check):
     """
-    Print summary results from a SCIP model optimization to standard output.
+    Print summary results from a B&B model optimization to standard output.
     """
     instancename = os.path.splitext(instancename)[0]
 
     print("Instance          :", instancename)
-    print("SCIP Status       :", model.getStatus())
-    print("Solving Time (sec):", model.getSolvingTime())
-    print("Gap               :", model.getGap())
-    print("Solving Nodes     :", model.getNNodes())
-    if model.getNSolsFound() > 0:
-        print("Objective value   :", model.getObjVal())
-        print("Solutions found   :", model.getNSolsFound())
+    print("B&B Solver        :", solver)
+    print("B&B Status        :", get_status(solver, results))
+    print("Solving Time (sec):", get_solving_time(solver, results))
+    print("Gap               :", get_optimality_gap(solver, results))
+    print("Solving Nodes     :", get_number_nodes(solver, results))
+
+    if get_number_solutions(solver, results):
+        print("Objective value   :", get_optimal_found(solver, results))
+        print("Solutions found   :", get_number_solutions(solver, results))
+
     if check:
-        c = _check_results(instancename, model)
-        if model.getStatus() == "optimal":
+        c = _check_results(instancename, solver, results)
+        if get_status(solver, results) == "optimal":
             if c: print("Check             : Success")
             elif (c == False): print("Check             : Fail")
             else: print("Check             : None")
         else:
             print("Check             : None")
-    print("")
 
-def store_results(instancename, model, filename, check):
+def store_results(solver, instancename, results, filename, check):
     """
-    Append optimization results from a SCIP model to an output file.
+    Append optimization results from a B&B model to an output file.
 
     Creates the output directory if it does not exist. Writes a header line
     if the file is new. Each call appends a line with instance results.
@@ -72,7 +86,7 @@ def store_results(instancename, model, filename, check):
 
     header = (
         f"{'Instance':<26}"
-        f"{'SCIP Status':<13}"
+        f"{'B&B Status':<12}"
         f"{'Solving Time (sec)':<20}"
         f"{'Gap':<8}"
         f"{'Solving Nodes':<15}"
@@ -81,7 +95,7 @@ def store_results(instancename, model, filename, check):
     )
 
     if check:
-        c = _check_results(instancename, model)
+        c = _check_results(instancename, solver, results)
         # NOTE: Nested f-strings allowed from Python 3.12+
         # header += f"{f'{'Check':<7}':>9}"
         formatted = f"{'Check':<7}"
@@ -97,21 +111,25 @@ def store_results(instancename, model, filename, check):
     # Append a new data line
     with open(filename, "a") as f:
         # NOTE: By default, SCIP returns gap=1e+20 if no solution is found
-        gap = model.getGap()
+        # NOTE: gap not yet implemented for P3D-DFS solver
+        if solver == 'p3ddfs':
+            gap = 0
+        elif solver == 'scip':
+            gap = get_optimality_gap(solver, results)
         gap_str = f"{'1e+20':<8}" if gap == 1e20 else f"{gap:<8.4f}"
 
         f.write(
             f"{instancename:<26}"
-            f"{model.getStatus():<13}"
-            f"{model.getSolvingTime():<20.4f}"
+            f"{get_status(solver, results):<12}"
+            f"{get_solving_time(solver, results):<20.4f}"
             f"{gap_str}"
-            f"{model.getNNodes():<15}"
+            f"{get_number_nodes(solver, results):<15}"
         )
 
-        if model.getNSolsFound() > 0:
+        if get_number_solutions(solver, results):
             f.write(
-                f"{model.getObjVal():<17.1f}"
-                f"{model.getNSolsFound():<15}"
+                f"{get_optimal_found(solver, results):<17.1f}"
+                f"{get_number_solutions(solver, results):<15}"
             )
         else:
             f.write(
@@ -120,7 +138,7 @@ def store_results(instancename, model, filename, check):
             )
 
         if check:
-            if model.getStatus() == "optimal":
+            if get_status(solver, results) == "optimal":
                 # NOTE: Nested f-strings allowed from Python 3.12+
                 if c:
                     formatted = f"{'Success':<7}"
@@ -144,7 +162,7 @@ def extract_results(filename, check, show_output=True):
     """
     columns=[
         "Instance",
-        "SCIP_Status",
+        "B&B_Status",
         "Solving_Time",
         "Gap",
         "Solving_Nodes",
@@ -182,21 +200,21 @@ def extract_results(filename, check, show_output=True):
 
     return mean_time, mean_gap, mean_nodes
 
-def _check_results(instancename, model):
+def _check_results(instancename, solver, results):
     """
-    TODO
+    Check whether the solution found for a given instance matches the known
+    optimal value.
     """
-    instance = os.path.splitext(instancename)[0]
     path = os.path.join("instances", "knapPI_optimal.txt")
 
-    if model.getNSolsFound() > 0:
-        scip_optimal = int(model.getObjVal())
+    if get_number_solutions(solver, results):
+        optimal_found = int(get_optimal_found(solver, results))
 
         with open(path, 'r') as f:
             for line in f:
                 inst, val = line.strip().split()
-                if inst == instance:
-                    if int(val) == scip_optimal:
+                if inst == instancename:
+                    if int(val) == optimal_found:
                         return True
                     else:
                         return False

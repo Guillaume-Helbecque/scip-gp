@@ -29,7 +29,8 @@ def _extract_data(filename):
 
 def _sort_data(n, weights, profits):
     """
-    TODO
+    Sort the weights and profits lists in-place according to the profit-to-weight
+    ratio in descending order.
     """
     ratios = [profits[i] / weights[i] for i in range(n)]
 
